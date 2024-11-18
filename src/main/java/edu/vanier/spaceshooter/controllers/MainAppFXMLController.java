@@ -1,23 +1,19 @@
 package edu.vanier.spaceshooter.controllers;
 
 import edu.vanier.spaceshooter.entities.Player;
+import edu.vanier.spaceshooter.entities.Projectile;
 import edu.vanier.spaceshooter.models.Sprite;
 
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 import javafx.animation.AnimationTimer;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import org.slf4j.Logger;
@@ -37,6 +33,8 @@ public class MainAppFXMLController {
     AnimationTimer gameLoop;
     private boolean shootDelay = false;
     private double shootDelayTime = 0;
+    private ArrayList<Projectile> projectileArrayList = new ArrayList<>();
+    private boolean shooting = false;
 
     @FXML
     public void initialize() {
@@ -101,21 +99,51 @@ public class MainAppFXMLController {
     private void setupKeyPressHandlers() {
         // e the key event containing information about the key pressed.
         mainScene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-                switch (event.getCode()) {
-                    case KeyCode.A: spaceShip.setLeft(true); break;
-                    case KeyCode.D: spaceShip.setRight(true); break;
-                    case KeyCode.W: spaceShip.setUp(true); break;
-                    case KeyCode.S: spaceShip.setDown(true); break;
-                    case KeyCode.SPACE: shoot(spaceShip.getSprite());
+            switch (event.getCode()) {
+                case KeyCode.A: {
+                    if (shooting) shoot(spaceShip.getSprite());
+                    spaceShip.setLeft(true);
+                    break;
                 }
-            });
+                case KeyCode.D: {
+                    if (shooting) shoot(spaceShip.getSprite());
+                    spaceShip.setRight(true);
+                    break;
+                }
+                case KeyCode.W: {
+                    if (shooting) shoot(spaceShip.getSprite());
+                    spaceShip.setUp(true);
+                    break;
+                }
+                case KeyCode.S: {
+                    if (shooting) shoot(spaceShip.getSprite());
+                    spaceShip.setDown(true);
+                    break;
+                }
+                case KeyCode.SPACE: {
+                    shoot(spaceShip.getSprite());
+                    shooting = true;
+                }
+            }
+        });
+
+        /*mainScene.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.SPACE){
+                shooting = true;
+                shoot(spaceShip.getSprite());
+            }
+        });*/
+
         mainScene.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
             switch (event.getCode()) {
                 case KeyCode.A: spaceShip.setLeft(false); break;
                 case KeyCode.D: spaceShip.setRight(false); break;
                 case KeyCode.W: spaceShip.setUp(false); break;
                 case KeyCode.S: spaceShip.setDown(false); break;
-                //case KeyCode.SPACE: shoot(spaceShip);
+                case KeyCode.SPACE: {
+                    shoot(spaceShip.getSprite());
+                    shooting = false;
+                }
             }
         });
     }
@@ -164,6 +192,7 @@ public class MainAppFXMLController {
         elapsedTime += 0.016;
         // Actions to be performed during each frame of the animation.
         getSprites().forEach(this::processSprite);
+        processProjectiles();
         removeDeadSprites();
 
         // Reset the elapsed time.
@@ -174,32 +203,41 @@ public class MainAppFXMLController {
 
     private void processSprite(Sprite sprite) {
         switch (sprite.getType()) {
-            case "enemybullet" ->
+            /*case "enemybullet" ->
                 handleEnemyBullet(sprite);
             case "playerbullet" ->
-                handlePlayerBullet(sprite);
+                handlePlayerBullet(sprite);*/
             case "enemy" ->
                 handleEnemyFiring(sprite);
         }
     }
 
-    private void handleEnemyBullet(Sprite sprite) {
-        sprite.moveDown();
-        // Check for collision with the spaceship
-        if (sprite.getBoundsInParent().intersects(spaceShip.getBoundsInParent())) {
-            spaceShip.setDead(true);
-            sprite.setDead(true);
+    private void processProjectiles(){
+        for (int i = 0; i < projectileArrayList.size(); i++) {
+            if (Objects.equals(projectileArrayList.get(i).getType(), "enemybullet")) {
+                handleEnemyBullet(projectileArrayList.get(i));
+            }
+            else if (Objects.equals(projectileArrayList.get(i).getType(), "playerbullet")) handlePlayerBullet(projectileArrayList.get(i));
         }
     }
 
-    private void handlePlayerBullet(Sprite sprite) {
-        sprite.moveUp();
+    private void handleEnemyBullet(Projectile projectile) {
+        projectile.moveDown();
+        // Check for collision with the spaceship
+        if (projectile.getSprite().getBoundsInParent().intersects(spaceShip.getBoundsInParent())) {
+            spaceShip.setDead(true);
+            projectile.getSprite().setDead(true);
+        }
+    }
+
+    private void handlePlayerBullet(Projectile projectile) {
+        projectile.moveUp();
         for (Sprite enemy : getSprites()) {
             if (enemy.getType().equals("enemy")) {
                 // Check for collision with an enemy
-                if (sprite.getBoundsInParent().intersects(enemy.getBoundsInParent())) {
+                if (projectile.getSprite().getBoundsInParent().intersects(enemy.getBoundsInParent())) {
                     enemy.setDead(true);
-                    sprite.setDead(true);
+                    projectile.getSprite().setDead(true);
                 }
             }
         }
@@ -243,13 +281,26 @@ public class MainAppFXMLController {
     private void shoot(Sprite firingEntity) {
         if (!shootDelay && !spaceShip.isDead()){
             // The firing entity can be either an enemy or the spaceship.
-            Sprite bullet = new Sprite(
-                    (int) firingEntity.getTranslateX() + 20,
-                    (int) firingEntity.getTranslateY(),
-                    5, 20,
-                    firingEntity.getType() + "bullet", Color.BLACK);
-            animationPanel.getChildren().add(bullet);
-            shootDelay = true;
+            if (Objects.equals(firingEntity.getType(), "enemy")) {
+                Projectile bullet = new Projectile(new Sprite(
+                        (int) firingEntity.getTranslateX() + 20,
+                        (int) firingEntity.getTranslateY(),
+                        5, 20,
+                        firingEntity.getType() + "bullet", Color.BLACK));
+                projectileArrayList.add(bullet);
+                animationPanel.getChildren().add(bullet.getSprite());
+                shootDelay = true;
+            }
+            else if (Objects.equals(firingEntity.getType(), "player") && shooting){
+                Projectile bullet = new Projectile(new Sprite(
+                        (int) firingEntity.getTranslateX() + 20,
+                        (int) firingEntity.getTranslateY(),
+                        5, 20,
+                        firingEntity.getType() + "bullet", Color.BLACK));
+                projectileArrayList.add(bullet);
+                animationPanel.getChildren().add(bullet.getSprite());
+                shootDelay = true;
+            }
         }
     }
 

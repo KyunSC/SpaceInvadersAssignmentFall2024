@@ -61,6 +61,7 @@ public class MainAppFXMLController {
                 spaceShip.moveDown();
                 spaceShip.moveLeft();
                 spaceShip.moveRight();
+                shoot(spaceShip.getSprite());
             }
         };
         gameLoop.start();
@@ -100,39 +101,13 @@ public class MainAppFXMLController {
         // e the key event containing information about the key pressed.
         mainScene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             switch (event.getCode()) {
-                case KeyCode.A: {
-                    if (shooting) shoot(spaceShip.getSprite());
-                    spaceShip.setLeft(true);
-                    break;
-                }
-                case KeyCode.D: {
-                    if (shooting) shoot(spaceShip.getSprite());
-                    spaceShip.setRight(true);
-                    break;
-                }
-                case KeyCode.W: {
-                    if (shooting) shoot(spaceShip.getSprite());
-                    spaceShip.setUp(true);
-                    break;
-                }
-                case KeyCode.S: {
-                    if (shooting) shoot(spaceShip.getSprite());
-                    spaceShip.setDown(true);
-                    break;
-                }
-                case KeyCode.SPACE: {
-                    shoot(spaceShip.getSprite());
-                    shooting = true;
-                }
+                case KeyCode.A: spaceShip.setLeft(true);break;
+                case KeyCode.D: spaceShip.setRight(true);break;
+                case KeyCode.W: spaceShip.setUp(true);break;
+                case KeyCode.S: spaceShip.setDown(true);break;
+                case KeyCode.SPACE: shooting = true;
             }
         });
-
-        /*mainScene.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.SPACE){
-                shooting = true;
-                shoot(spaceShip.getSprite());
-            }
-        });*/
 
         mainScene.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
             switch (event.getCode()) {
@@ -140,10 +115,7 @@ public class MainAppFXMLController {
                 case KeyCode.D: spaceShip.setRight(false); break;
                 case KeyCode.W: spaceShip.setUp(false); break;
                 case KeyCode.S: spaceShip.setDown(false); break;
-                case KeyCode.SPACE: {
-                    shoot(spaceShip.getSprite());
-                    shooting = false;
-                }
+                case KeyCode.SPACE: shooting = false;
             }
         });
     }

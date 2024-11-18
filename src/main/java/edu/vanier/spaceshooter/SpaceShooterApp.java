@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +25,9 @@ public class SpaceShooterApp extends Application {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/MainApp_layout.fxml"));
             controller = new MainAppFXMLController();
             loader.setController(controller);
-            Pane root = loader.load();
+            StackPane root = loader.load();
             //-- 2) Create and set the scene to the stage.
-            Scene scene = new Scene(root, 1000, 1000);
+            Scene scene = new Scene(root, 1568, 1080);
             controller.setScene(scene);
             controller.setupGameWorld();
             primaryStage.setScene(scene);

@@ -13,6 +13,7 @@ import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
@@ -28,15 +29,19 @@ public class MainAppFXMLController {
     private final static Logger logger = LoggerFactory.getLogger(MainAppFXMLController.class);
     @FXML
     private Pane animationPanel;
+
     private double elapsedTime = 0;
     private Player spaceShip;
     private Scene mainScene;
     AnimationTimer gameLoop;
     private boolean shootDelay = false;
     private double shootDelayTime = 0;
+    private boolean shooting = false;
     private ArrayList<Projectile> projectileArrayList = new ArrayList<>();
     private ArrayList<Invader> invaderArrayList = new ArrayList<>();
-    private boolean shooting = false;
+    private int score = 0;
+    @FXML
+    private Label scoreLabel;
 
     @FXML
     public void initialize() {
@@ -44,6 +49,7 @@ public class MainAppFXMLController {
         spaceShip = new Player(300, 750, 40, 40, "player", Color.BLUE);
         animationPanel.setPrefSize(600, 800);
         animationPanel.getChildren().add(spaceShip.getSprite());
+        scoreLabel = new Label("Score: " + score);
     }
 
     public void setupGameWorld() {
@@ -166,7 +172,7 @@ public class MainAppFXMLController {
     private void update() {
         elapsedTime += 0.016;
         // Actions to be performed during each frame of the animation.
-        invaderArrayList.forEach(this::processInvader);
+        invaderArrayList.forEach(this::handleEnemyFiring);
         processProjectiles();
         removeDeadSprites();
 
@@ -174,10 +180,6 @@ public class MainAppFXMLController {
         if (elapsedTime > 2) {
             elapsedTime = 0;
         }
-    }
-
-    private void processInvader(Invader invader) {
-        handleEnemyFiring(invader.getSprite());
     }
 
     private void processProjectiles(){
@@ -207,15 +209,17 @@ public class MainAppFXMLController {
                 if (projectile.getSprite().getBoundsInParent().intersects(enemy.getBoundsInParent())) {
                     enemy.setDead(true);
                     projectile.getSprite().setDead(true);
+                    score++;
+                    scoreLabel.setText("Score: " + score);
                 }
             }
         }
     }
 
-    private void handleEnemyFiring(Sprite sprite) {
+    private void handleEnemyFiring(Invader invader) {
         if (elapsedTime > 2) {
             if (Math.random() < 0.3) {
-                shoot(sprite);
+                shoot(invader.getSprite());
             }
         }
     }
@@ -251,13 +255,13 @@ public class MainAppFXMLController {
         if (!shootDelay && !spaceShip.isDead()){
             // The firing entity can be either an enemy or the spaceship.
             if (Objects.equals(firingEntity.getType(), "enemy")) {
-                Projectile bullet = new Projectile((int) firingEntity.getTranslateX() + 20, (int) firingEntity.getTranslateY(), 5, 20, firingEntity.getType() + "bullet", Color.BLACK);
+                Projectile bullet = new Projectile((int) firingEntity.getTranslateX() + 20, (int) firingEntity.getTranslateY(), 5, 20, firingEntity.getType() + "bullet", Color.DARKMAGENTA);
                 projectileArrayList.add(bullet);
                 animationPanel.getChildren().add(bullet.getSprite());
                 shootDelay = true;
             }
             else if (Objects.equals(firingEntity.getType(), "player") && shooting){
-                Projectile bullet = new Projectile((int) firingEntity.getTranslateX() + 20, (int) firingEntity.getTranslateY(), 5, 20, firingEntity.getType() + "bullet", Color.BLACK);
+                Projectile bullet = new Projectile((int) firingEntity.getTranslateX() + 20, (int) firingEntity.getTranslateY(), 5, 20, firingEntity.getType() + "bullet", Color.DARKMAGENTA);
                 projectileArrayList.add(bullet);
                 animationPanel.getChildren().add(bullet.getSprite());
                 shootDelay = true;

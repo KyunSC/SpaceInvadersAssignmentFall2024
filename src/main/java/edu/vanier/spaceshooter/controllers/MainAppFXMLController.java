@@ -49,7 +49,7 @@ public class MainAppFXMLController {
         spaceShip = new Player(300, 750, 40, 40, "player", Color.BLUE);
         animationPanel.setPrefSize(600, 800);
         animationPanel.getChildren().add(spaceShip.getSprite());
-        scoreLabel = new Label("Score: " + score);
+        scoreLabel.setText("Score: " + score);
     }
 
     public void setupGameWorld() {
@@ -172,7 +172,10 @@ public class MainAppFXMLController {
     private void update() {
         elapsedTime += 0.016;
         // Actions to be performed during each frame of the animation.
-        invaderArrayList.forEach(this::handleEnemyFiring);
+        /*invaderArrayList.forEach(this::handleEnemyFiring);*/
+        for (int i = 0; i < invaderArrayList.size(); i++) {
+            handleEnemyFiring(invaderArrayList.get(i));
+        }
         processProjectiles();
         removeDeadSprites();
 
@@ -203,15 +206,14 @@ public class MainAppFXMLController {
 
     private void handlePlayerBullet(Projectile projectile) {
         projectile.moveUp();
-        for (Sprite enemy : getSprites()) {
-            if (enemy.getType().equals("enemy")) {
-                // Check for collision with an enemy
-                if (projectile.getSprite().getBoundsInParent().intersects(enemy.getBoundsInParent())) {
-                    enemy.setDead(true);
-                    projectile.getSprite().setDead(true);
-                    score++;
-                    scoreLabel.setText("Score: " + score);
-                }
+        for (int i = 0; i < invaderArrayList.size(); i++) {
+            if (projectile.getSprite().getBoundsInParent().intersects(invaderArrayList.get(i).getBoundsInParent())) {
+                invaderArrayList.get(i).getSprite().setDead(true);
+                invaderArrayList.get(i).setDead(true);
+                invaderArrayList.remove(i);
+                projectile.getSprite().setDead(true);
+                score++;
+                scoreLabel.setText("Score: " + score);
             }
         }
     }
@@ -258,7 +260,6 @@ public class MainAppFXMLController {
                 Projectile bullet = new Projectile((int) firingEntity.getTranslateX() + 20, (int) firingEntity.getTranslateY(), 5, 20, firingEntity.getType() + "bullet", Color.DARKMAGENTA);
                 projectileArrayList.add(bullet);
                 animationPanel.getChildren().add(bullet.getSprite());
-                shootDelay = true;
             }
             else if (Objects.equals(firingEntity.getType(), "player") && shooting){
                 Projectile bullet = new Projectile((int) firingEntity.getTranslateX() + 20, (int) firingEntity.getTranslateY(), 5, 20, firingEntity.getType() + "bullet", Color.DARKMAGENTA);

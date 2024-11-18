@@ -66,4 +66,6 @@ public class Player extends Sprite {
     public void setDead(boolean dead) {
         this.dead = dead;
     }
+
+
 }

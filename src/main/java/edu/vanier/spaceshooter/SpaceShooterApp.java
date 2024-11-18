@@ -5,6 +5,7 @@ import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -35,7 +36,11 @@ public class SpaceShooterApp extends Application {
             primaryStage.sizeToScene();
             primaryStage.setAlwaysOnTop(true);
             primaryStage.show();
-            primaryStage.setAlwaysOnTop(false);
+            //primaryStage.setAlwaysOnTop(false);
+            scene.setOnKeyPressed(event -> {
+                if (event.getCode() == KeyCode.F) primaryStage.setFullScreen(true);
+            });
+
         } catch (IOException ex) {
             logger.error(ex.getMessage(), ex);
         }

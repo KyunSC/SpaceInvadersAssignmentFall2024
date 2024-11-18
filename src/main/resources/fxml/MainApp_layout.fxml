@@ -3,7 +3,12 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
-   <Pane fx:id="animationPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-image: url(&quot;stars.png&quot;); -fx-background-size: 1920 1080; -fx-background-position: center center;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" />
-   <Label fx:id="scoreLabel" text="Label" />
+<StackPane prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+   <Pane fx:id="animationPanel" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-image: url(&quot;stars.png&quot;); -fx-background-size: 1920 1080; -fx-background-position: center center;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" />
+   <VBox prefHeight="200.0" prefWidth="100.0">
+      <children>
+         <Label fx:id="scoreLabel" prefHeight="52.0" prefWidth="1794.0" text="scoreLabel" textFill="#0380ff" />
+         <Button fx:id="restart" mnemonicParsing="false" text="Restart" textFill="#0380ff" />
+      </children>
+   </VBox>
 </StackPane>

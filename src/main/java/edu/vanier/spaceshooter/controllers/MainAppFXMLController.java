@@ -196,9 +196,10 @@ public class MainAppFXMLController {
     private void handleEnemyBullet(Projectile projectile) {
         projectile.moveDown();
         // Check for collision with the spaceship
-        if (projectile.getSprite().getBoundsInParent().intersects(spaceShip.getBoundsInParent())) {
-            spaceShip.setDead(true);
+        if (projectile.getSprite().getBoundsInParent().intersects(spaceShip.getSprite().getBoundsInParent())) {
+            spaceShip.getSprite().setDead(true);
             projectile.getSprite().setDead(true);
+            spaceShip.setDead(true);
         }
     }
 

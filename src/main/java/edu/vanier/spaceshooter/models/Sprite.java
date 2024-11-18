@@ -7,6 +7,11 @@ public class Sprite extends Rectangle {
 
     private boolean dead = false;
     private final String type;
+    private Color color;
+    private int x;
+    private int y;
+    private int width;
+    private int height;
 
     public Sprite(int x, int y, int width, int height, String type, Color color) {
         super(width, height, color);
@@ -42,5 +47,9 @@ public class Sprite extends Rectangle {
 
     public void setDead(boolean dead) {
         this.dead = dead;
+    }
+
+    public Color getColor(){
+        return color;
     }
 }

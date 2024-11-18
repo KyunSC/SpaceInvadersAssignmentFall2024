@@ -1,13 +1,23 @@
 package edu.vanier.spaceshooter.controllers;
 
+import edu.vanier.spaceshooter.entities.Player;
 import edu.vanier.spaceshooter.models.Sprite;
+
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.animation.AnimationTimer;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import org.slf4j.Logger;
@@ -22,7 +32,7 @@ public class MainAppFXMLController {
     @FXML
     private Pane animationPanel;
     private double elapsedTime = 0;
-    private Sprite spaceShip;
+    private Player spaceShip;
     private Scene mainScene;
     AnimationTimer gameLoop;
     private boolean shootDelay = false;
@@ -31,9 +41,9 @@ public class MainAppFXMLController {
     @FXML
     public void initialize() {
         logger.info("Initializing MainAppController...");
-        spaceShip = new Sprite(300, 750, 40, 40, "player", Color.BLUE);
+        spaceShip = new Player(new Sprite(300, 750, 40, 40, "player", Color.BLUE));
         animationPanel.setPrefSize(600, 800);
-        animationPanel.getChildren().add(spaceShip);
+        animationPanel.getChildren().add(spaceShip.getSprite());
     }
 
     public void setupGameWorld() {
@@ -49,6 +59,10 @@ public class MainAppFXMLController {
             @Override
             public void handle(long now) {
                 update();
+                spaceShip.moveUp();
+                spaceShip.moveDown();
+                spaceShip.moveLeft();
+                spaceShip.moveRight();
             }
         };
         gameLoop.start();
@@ -86,18 +100,22 @@ public class MainAppFXMLController {
      */
     private void setupKeyPressHandlers() {
         // e the key event containing information about the key pressed.
-        mainScene.setOnKeyPressed(e -> {
-            switch (e.getCode()) {
-                case KeyCode.A ->
-                        spaceShip.moveLeft();
-                case KeyCode.D ->
-                        spaceShip.moveRight();
-                case KeyCode.W ->
-                        spaceShip.moveUp();
-                case KeyCode.S ->
-                        spaceShip.moveDown();
-                case KeyCode.SPACE ->
-                        shoot(spaceShip);
+        mainScene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                switch (event.getCode()) {
+                    case KeyCode.A: spaceShip.setLeft(true); break;
+                    case KeyCode.D: spaceShip.setRight(true); break;
+                    case KeyCode.W: spaceShip.setUp(true); break;
+                    case KeyCode.S: spaceShip.setDown(true); break;
+                    case KeyCode.SPACE: shoot(spaceShip.getSprite());
+                }
+            });
+        mainScene.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
+            switch (event.getCode()) {
+                case KeyCode.A: spaceShip.setLeft(false); break;
+                case KeyCode.D: spaceShip.setRight(false); break;
+                case KeyCode.W: spaceShip.setUp(false); break;
+                case KeyCode.S: spaceShip.setDown(false); break;
+                //case KeyCode.SPACE: shoot(spaceShip);
             }
         });
     }
@@ -224,7 +242,7 @@ public class MainAppFXMLController {
      */
     private void shoot(Sprite firingEntity) {
         if (!shootDelay && !spaceShip.isDead()){
-            // The firing entity can be either an enemy or the sapceship.
+            // The firing entity can be either an enemy or the spaceship.
             Sprite bullet = new Sprite(
                     (int) firingEntity.getTranslateX() + 20,
                     (int) firingEntity.getTranslateY(),

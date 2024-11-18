@@ -1,16 +1,19 @@
 package edu.vanier.spaceshooter.entities;
 
 import edu.vanier.spaceshooter.models.Sprite;
+import javafx.scene.paint.Color;
 
 public class Projectile extends Sprite {
 
     Sprite sprite;
     String type;
 
-    public Projectile(Sprite sprite){
-        super((int) sprite.getX(), (int) sprite.getY(), (int) sprite.getWidth(), (int) sprite.getHeight(), sprite.getType(), sprite.getColor());
-        this.sprite = sprite;
-        this.type = sprite.getType();
+    public Projectile(int x, int y, int width, int height, String type, Color color) {
+        super(x, y, width, height, type, color);
+        this.type = type;
+        setTranslateX(x);
+        setTranslateY(y);
+        this.sprite = new Sprite(x, y, width, height, type, color);
     }
 
     public void moveUp() {

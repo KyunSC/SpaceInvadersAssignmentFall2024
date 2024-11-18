@@ -1,5 +1,6 @@
 package edu.vanier.spaceshooter.controllers;
 
+import edu.vanier.spaceshooter.entities.Invader;
 import edu.vanier.spaceshooter.entities.Player;
 import edu.vanier.spaceshooter.entities.Projectile;
 import edu.vanier.spaceshooter.models.Sprite;
@@ -34,12 +35,13 @@ public class MainAppFXMLController {
     private boolean shootDelay = false;
     private double shootDelayTime = 0;
     private ArrayList<Projectile> projectileArrayList = new ArrayList<>();
+    private ArrayList<Invader> invaderArrayList = new ArrayList<>();
     private boolean shooting = false;
 
     @FXML
     public void initialize() {
         logger.info("Initializing MainAppController...");
-        spaceShip = new Player(new Sprite(300, 750, 40, 40, "player", Color.BLUE));
+        spaceShip = new Player(300, 750, 40, 40, "player", Color.BLUE);
         animationPanel.setPrefSize(600, 800);
         animationPanel.getChildren().add(spaceShip.getSprite());
     }
@@ -122,11 +124,11 @@ public class MainAppFXMLController {
 
     private void generateInvaders() {
         for (int i = 0; i < 5; i++) {
-            Sprite invader = new Sprite(
+            Invader invader = new Invader(
                     90 + i * 100,
                     150, 30, 30, "enemy",
                     Color.RED);
-            animationPanel.getChildren().add(invader);
+            animationPanel.getChildren().add(invader.getSprite());
         }
     }
 
@@ -171,6 +173,8 @@ public class MainAppFXMLController {
         if (elapsedTime > 2) {
             elapsedTime = 0;
         }
+
+
     }
 
     private void processSprite(Sprite sprite) {
@@ -255,21 +259,21 @@ public class MainAppFXMLController {
         if (!shootDelay && !spaceShip.isDead()){
             // The firing entity can be either an enemy or the spaceship.
             if (Objects.equals(firingEntity.getType(), "enemy")) {
-                Projectile bullet = new Projectile(new Sprite(
+                Projectile bullet = new Projectile(
                         (int) firingEntity.getTranslateX() + 20,
                         (int) firingEntity.getTranslateY(),
                         5, 20,
-                        firingEntity.getType() + "bullet", Color.BLACK));
+                        firingEntity.getType() + "bullet", Color.BLACK);
                 projectileArrayList.add(bullet);
                 animationPanel.getChildren().add(bullet.getSprite());
                 shootDelay = true;
             }
             else if (Objects.equals(firingEntity.getType(), "player") && shooting){
-                Projectile bullet = new Projectile(new Sprite(
+                Projectile bullet = new Projectile(
                         (int) firingEntity.getTranslateX() + 20,
                         (int) firingEntity.getTranslateY(),
                         5, 20,
-                        firingEntity.getType() + "bullet", Color.BLACK));
+                        firingEntity.getType() + "bullet", Color.BLACK);
                 projectileArrayList.add(bullet);
                 animationPanel.getChildren().add(bullet.getSprite());
                 shootDelay = true;

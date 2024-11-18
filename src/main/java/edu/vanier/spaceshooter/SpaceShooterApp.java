@@ -34,7 +34,6 @@ public class SpaceShooterApp extends Application {
             primaryStage.setScene(scene);
             primaryStage.setTitle("Space Invaders!");
             primaryStage.sizeToScene();
-            primaryStage.setAlwaysOnTop(true);
             primaryStage.show();
             //primaryStage.setAlwaysOnTop(false);
             scene.setOnKeyPressed(event -> {

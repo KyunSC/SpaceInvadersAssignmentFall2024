@@ -13,6 +13,7 @@ import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -42,21 +43,18 @@ public class MainAppFXMLController {
     private int score = 0;
     @FXML
     private Label scoreLabel;
+    @FXML
+    private Label livesLabel;
+    @FXML
+    private Button restartButton;
 
     @FXML
     public void initialize() {
-        logger.info("Initializing MainAppController...");
-        spaceShip = new Player(300, 750, 40, 40, "player", Color.BLUE);
-        animationPanel.setPrefSize(600, 800);
-        animationPanel.getChildren().add(spaceShip.getSprite());
-        scoreLabel.setText("Score: " + score);
+
     }
 
     public void setupGameWorld() {
-        initGameLoop();
-        setupKeyPressHandlers();
-        generateInvaders();
-        initShootingDelay();
+        GameEngine gameEngine = new GameEngine(animationPanel, scoreLabel, mainScene, livesLabel, restartButton);
     }
 
     private void initGameLoop() {

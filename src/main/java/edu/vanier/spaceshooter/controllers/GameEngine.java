@@ -205,6 +205,7 @@ public class GameEngine {
         }
         processProjectiles();
         removeDeadSprites();
+        spaceShipCollisions();
 
         // Reset the elapsed time.
         if (elapsedTime > 2) {
@@ -265,6 +266,25 @@ public class GameEngine {
         }
     }
 
+    private void spaceShipCollisions(){
+        for (Invader invader : invaderArrayList) {
+            if (spaceShip.getSprite().getBoundsInParent().intersects(invader.getSprite().getBoundsInParent()) && !invader.isDead() && !spaceShip.isDead()) {
+                if (spaceShip.getLives() <= 1) {
+                    invader.getSprite().setDead(true);
+                    spaceShip.getSprite().setDead(true);
+                    spaceShip.setDead(true);
+                    spaceShip.setLives(spaceShip.getLives() - 1);
+                    livesLabel.setText("Lives: " + spaceShip.getLives());
+                } else {
+                    invader.getSprite().setDead(true);
+                    invader.setDead(true);
+                    spaceShip.setLives(spaceShip.getLives() - 1);
+                    livesLabel.setText("Lives: " + spaceShip.getLives());
+                }
+            }
+        }
+    }
+
     /**
      * Removes all dead sprites from the animation panel.
      * <p>
@@ -296,12 +316,12 @@ public class GameEngine {
         if (!shootDelay && !spaceShip.isDead()){
             // The firing entity can be either an enemy or the spaceship.
             if (Objects.equals(firingEntity.getType(), "enemy")) {
-                Projectile bullet = new Projectile((int) firingEntity.getTranslateX() + 20, (int) firingEntity.getTranslateY(), 5, 20, firingEntity.getType() + "bullet", mediumInvader);
+                Projectile bullet = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 5, 20, firingEntity.getType() + "bullet", mediumInvader);
                 projectileArrayList.add(bullet);
                 animationPanel.getChildren().add(bullet.getSprite());
             }
             else if (Objects.equals(firingEntity.getType(), "player") && shooting){
-                Projectile bullet = new Projectile((int) firingEntity.getTranslateX() + 20, (int) firingEntity.getTranslateY(), 5, 20, firingEntity.getType() + "bullet", mediumInvader);
+                Projectile bullet = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 5, 20, firingEntity.getType() + "bullet", mediumInvader);
                 projectileArrayList.add(bullet);
                 animationPanel.getChildren().add(bullet.getSprite());
                 shootDelay = true;

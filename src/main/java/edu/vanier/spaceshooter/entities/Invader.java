@@ -23,19 +23,19 @@ public class Invader extends Sprite {
     }
 
     public void moveLeft() {
-        setTranslateX(getTranslateX() - 5);
+        sprite.setLayoutX(getLayoutX() - 5);
     }
 
     public void moveRight() {
-        setTranslateX(getTranslateX() + 5);
+        sprite.setLayoutX(getLayoutX() + 5);
     }
 
     public void moveUp() {
-        setTranslateY(getTranslateY() - 5);
+        sprite.setLayoutY(getLayoutY() - 5);
     }
 
     public void moveDown() {
-        setTranslateY(getTranslateY() + 5);
+        sprite.setLayoutY(getLayoutY() + 5);
     }
 
     public boolean isDead() {

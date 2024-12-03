@@ -30,13 +30,13 @@ public class GameEngine {
     private Player spaceShip;
     private Scene mainScene;
     AnimationTimer gameLoop;
+    AnimationTimer delay;
     private boolean shootDelay = false;
     private double shootDelayTime = 0;
     private boolean shooting = false;
     private ArrayList<Projectile> projectileArrayList = new ArrayList<>();
     private ArrayList<Invader> invaderArrayList = new ArrayList<>();
     private int score = 0;
-    private int lives = 3;
     Pane animationPanel;
     Label scoreLabel;
     Label livesLabel;
@@ -70,8 +70,11 @@ public class GameEngine {
             invaderArrayList.clear();
             projectileArrayList.clear();
             animationPanel.getChildren().clear();
+            gameLoop.stop();
+            delay.stop();
             spaceShip = new Player(300, 750, 40, 40, "player", Color.BLUE);
             animationPanel.getChildren().add(spaceShip.getSprite());
+            livesLabel.setText("Lives: " + spaceShip.getLives());
             stopAnimation();
             setupGameWorld();
         });
@@ -94,7 +97,7 @@ public class GameEngine {
     }
 
     private void initShootingDelay(){
-        AnimationTimer delay = new AnimationTimer() {
+        delay = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 shootingDelay();
@@ -119,6 +122,8 @@ public class GameEngine {
      * <ul>
      * <li>Pressing 'A' moves the spaceship to the left.</li>
      * <li>Pressing 'D' moves the spaceship to the right.</li>
+     * <li>Pressing 'W' moves the spaceship up.</li>
+     * <li>Pressing 'S' moves the spaceship down.</li>
      * <li>Pressing the SPACE key triggers the spaceship to shoot.</li>
      * </ul>
      * </p>
@@ -215,16 +220,21 @@ public class GameEngine {
     private void handleEnemyBullet(Projectile projectile) {
         projectile.moveDown();
         // Check for collision with the spaceship
-        if (projectile.getSprite().getBoundsInParent().intersects(spaceShip.getSprite().getBoundsInParent())) {
-            if (lives <= 0) {
+        if (projectile.getSprite().getBoundsInParent().intersects(spaceShip.getSprite().getBoundsInParent()) && !projectile.isDead()) {
+            if (spaceShip.getLives() <= 1) {
                 projectile.getSprite().setDead(true);
+                projectile.setDead(true);
                 spaceShip.getSprite().setDead(true);
                 spaceShip.setDead(true);
+                spaceShip.setLives(spaceShip.getLives() - 1);
+                livesLabel.setText("Lives: " + spaceShip.getLives());
             }
             else {
                 projectile.getSprite().setDead(true);
-                lives--;
-                livesLabel.setText("Lives: " + lives);
+                projectile.setDead(true);
+                spaceShip.setLives(spaceShip.getLives() - 1);
+                livesLabel.setText("Lives: " + spaceShip.getLives());
+                System.out.println(projectile);
             }
         }
     }

@@ -14,6 +14,7 @@ public class Player extends Sprite {
     boolean right;
     boolean up;
     boolean down;
+    int lives = 3;
 
     public Player(int x, int y, int width, int height, String type, Color color) {
         super(x, y, width, height, type, color);
@@ -21,6 +22,7 @@ public class Player extends Sprite {
         setTranslateX(x);
         setTranslateY(y);
         this.sprite = new Sprite(x, y, width, height, type, color);
+        this.lives = 3;
     }
 
     public void setLeft(boolean left) {this.left = left;}
@@ -67,5 +69,7 @@ public class Player extends Sprite {
         this.dead = dead;
     }
 
+    public void setLives(int lives) {this.lives = lives;}
 
+    public int getLives(){return lives;}
 }

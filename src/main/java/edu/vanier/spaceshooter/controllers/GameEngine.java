@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Objects;
 
 import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -22,6 +24,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +42,13 @@ public class GameEngine {
     private boolean shooting = false;
     private ArrayList<Projectile> projectileArrayList = new ArrayList<>();
     private ArrayList<Invader> invaderArrayList = new ArrayList<>();
-    private int score = 0;
     Pane animationPanel;
     Label scoreLabel;
     Label livesLabel;
     Button restartButton;
     Image mediumInvader = new Image(String.valueOf(getClass().getResource("/assets/enemy-medium.png")));
+    Image explosion = new Image(String.valueOf(getClass().getResource("/assets/explosionGIF.gif")));
+
 
     public GameEngine(Pane animationPanel, Label scoreLabel, Scene mainScene, Label livesLabel, Button restartButton) {
         logger.info("Initializing MainAppController...");
@@ -53,10 +57,11 @@ public class GameEngine {
         spaceShip = new Player(300, 750, 40, 40, "player");
         animationPanel.getChildren().add(spaceShip.getSprite());
         this.scoreLabel = scoreLabel;
-        scoreLabel.setText("Score: " + score);
         this.mainScene = mainScene;
         this.livesLabel = livesLabel;
         this.restartButton = restartButton;
+        scoreLabel.setText("Score: " + spaceShip.getScore());
+        livesLabel.setText("Lives: " + spaceShip.getLives());
         setupGameWorld();
     }
 
@@ -79,6 +84,7 @@ public class GameEngine {
             spaceShip = new Player(300, 750, 40, 40, "player");
             animationPanel.getChildren().add(spaceShip.getSprite());
             livesLabel.setText("Lives: " + spaceShip.getLives());
+            scoreLabel.setText("Score: " + spaceShip.getScore());
             stopAnimation();
             setupGameWorld();
         });
@@ -246,14 +252,11 @@ public class GameEngine {
 
     private void handlePlayerBullet(Projectile projectile) {
         projectile.moveUp();
-        for (int i = 0; i < invaderArrayList.size(); i++) {
-            if (projectile.getSprite().getBoundsInParent().intersects(invaderArrayList.get(i).getBoundsInParent())) {
-                invaderArrayList.get(i).getSprite().setDead(true);
-                invaderArrayList.get(i).setDead(true);
-                invaderArrayList.remove(i);
+        for (Invader invader : invaderArrayList) {
+            if (projectile.getSprite().getBoundsInParent().intersects(invader.getBoundsInParent())) {
+                projectile.setDead(true);
                 projectile.getSprite().setDead(true);
-                score++;
-                scoreLabel.setText("Score: " + score);
+                invaderGetsHit(invader);
             }
         }
     }
@@ -270,19 +273,39 @@ public class GameEngine {
         for (Invader invader : invaderArrayList) {
             if (spaceShip.getSprite().getBoundsInParent().intersects(invader.getSprite().getBoundsInParent()) && !invader.isDead() && !spaceShip.isDead()) {
                 if (spaceShip.getLives() <= 1) {
-                    invader.getSprite().setDead(true);
-                    spaceShip.getSprite().setDead(true);
-                    spaceShip.setDead(true);
-                    spaceShip.setLives(spaceShip.getLives() - 1);
-                    livesLabel.setText("Lives: " + spaceShip.getLives());
+                    invaderGetsHit(invader);
+                    playerGetsHit();
                 } else {
-                    invader.getSprite().setDead(true);
-                    invader.setDead(true);
-                    spaceShip.setLives(spaceShip.getLives() - 1);
-                    livesLabel.setText("Lives: " + spaceShip.getLives());
+                    invaderGetsHit(invader);
+                    playerGetsHit();
                 }
             }
         }
+    }
+
+    private void playerGetsHit(){
+        if (spaceShip.getLives() <= 1) {
+            spaceShip.getSprite().setDead(true);
+            spaceShip.setDead(true);
+            spaceShip.setLives(spaceShip.getLives() - 1);
+            livesLabel.setText("Lives: " + spaceShip.getLives());
+        } else {
+            spaceShip.setLives(spaceShip.getLives() - 1);
+            livesLabel.setText("Lives: " + spaceShip.getLives());
+        }
+    }
+
+    private void invaderGetsHit(Invader invader){
+        invader.setDead(true);
+        invader.getSprite().setDead(true);
+        invaderArrayList.remove(invader);
+        spaceShip.setScore(spaceShip.getScore() + 1);
+        scoreLabel.setText("Score: " + spaceShip.getScore());
+        animationPanel.getChildren().addFirst(new Sprite(invader.getLayoutX(), invader.getLayoutY(), 40, 40, "GIF", explosion));
+        Timeline gifTime = new Timeline(new KeyFrame(Duration.millis(500)));
+        gifTime.setOnFinished(event -> animationPanel.getChildren().remove(animationPanel.getChildren().getFirst()));
+        gifTime.setCycleCount(1);
+        gifTime.play();
     }
 
     /**

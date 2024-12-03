@@ -12,13 +12,15 @@ public class Player extends ImageView {
     boolean right;
     boolean up;
     boolean down;
-    int lives = 3;
+    int lives;
+    int score = 0;
     Image spaceShipImage = new Image(String.valueOf(getClass().getResource("/assets/ship.png")));
 
     public Player(int x, int y, int width, int height, String type) {
         this.type = type;
         this.sprite = new Sprite(x, y, width, height, type, spaceShipImage);
         this.lives = 3;
+        this.score = 0;
     }
 
     public void setLeft(boolean left) {this.left = left;}
@@ -68,4 +70,8 @@ public class Player extends ImageView {
     public void setLives(int lives) {this.lives = lives;}
 
     public int getLives(){return lives;}
+
+    public int getScore(){return score;}
+
+    public void setScore(int score){this.score = score;}
 }

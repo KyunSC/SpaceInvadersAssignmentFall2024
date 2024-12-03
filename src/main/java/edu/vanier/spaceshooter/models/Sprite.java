@@ -14,7 +14,7 @@ public class Sprite extends ImageView {
     private int width;
     private int height;
 
-    public Sprite(int x, int y, int width, int height, String type, Image image) {
+    public Sprite(double x, double y, double width, double height, String type, Image image) {
         setImage(image);
         setFitWidth(width);
         setFitHeight(height);

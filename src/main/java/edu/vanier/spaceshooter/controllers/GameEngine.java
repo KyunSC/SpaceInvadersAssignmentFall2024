@@ -15,10 +15,13 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,12 +44,13 @@ public class GameEngine {
     Label scoreLabel;
     Label livesLabel;
     Button restartButton;
+    Image mediumInvader = new Image(String.valueOf(getClass().getResource("/assets/enemy-medium.png")));
 
     public GameEngine(Pane animationPanel, Label scoreLabel, Scene mainScene, Label livesLabel, Button restartButton) {
         logger.info("Initializing MainAppController...");
         this.animationPanel = animationPanel;
         animationPanel.setPrefSize(600, 800);
-        spaceShip = new Player(300, 750, 40, 40, "player", Color.BLUE);
+        spaceShip = new Player(300, 750, 40, 40, "player");
         animationPanel.getChildren().add(spaceShip.getSprite());
         this.scoreLabel = scoreLabel;
         scoreLabel.setText("Score: " + score);
@@ -72,7 +76,7 @@ public class GameEngine {
             animationPanel.getChildren().clear();
             gameLoop.stop();
             delay.stop();
-            spaceShip = new Player(300, 750, 40, 40, "player", Color.BLUE);
+            spaceShip = new Player(300, 750, 40, 40, "player");
             animationPanel.getChildren().add(spaceShip.getSprite());
             livesLabel.setText("Lives: " + spaceShip.getLives());
             stopAnimation();
@@ -156,7 +160,7 @@ public class GameEngine {
             Invader invader = new Invader(
                     90 + i * 100,
                     150, 30, 30, "enemy",
-                    Color.RED);
+                    mediumInvader);
             invaderArrayList.add(invader);
             animationPanel.getChildren().add(invader.getSprite());
         }
@@ -200,7 +204,7 @@ public class GameEngine {
             handleEnemyFiring(invaderArrayList.get(i));
         }
         processProjectiles();
-        removeDeadSprites();
+//        removeDeadSprites();
 
         // Reset the elapsed time.
         if (elapsedTime > 2) {
@@ -271,8 +275,8 @@ public class GameEngine {
      */
     private void removeDeadSprites() {
         animationPanel.getChildren().removeIf(n -> {
-            Sprite sprite = (Sprite) n;
-            return sprite.isDead();
+                Sprite sprite = (Sprite) n;
+                return sprite.isDead();
         });
     }
 
@@ -292,12 +296,12 @@ public class GameEngine {
         if (!shootDelay && !spaceShip.isDead()){
             // The firing entity can be either an enemy or the spaceship.
             if (Objects.equals(firingEntity.getType(), "enemy")) {
-                Projectile bullet = new Projectile((int) firingEntity.getTranslateX() + 20, (int) firingEntity.getTranslateY(), 5, 20, firingEntity.getType() + "bullet", Color.DARKMAGENTA);
+                Projectile bullet = new Projectile((int) firingEntity.getTranslateX() + 20, (int) firingEntity.getTranslateY(), 5, 20, firingEntity.getType() + "bullet", mediumInvader);
                 projectileArrayList.add(bullet);
                 animationPanel.getChildren().add(bullet.getSprite());
             }
             else if (Objects.equals(firingEntity.getType(), "player") && shooting){
-                Projectile bullet = new Projectile((int) firingEntity.getTranslateX() + 20, (int) firingEntity.getTranslateY(), 5, 20, firingEntity.getType() + "bullet", Color.DARKMAGENTA);
+                Projectile bullet = new Projectile((int) firingEntity.getTranslateX() + 20, (int) firingEntity.getTranslateY(), 5, 20, firingEntity.getType() + "bullet", mediumInvader);
                 projectileArrayList.add(bullet);
                 animationPanel.getChildren().add(bullet.getSprite());
                 shootDelay = true;

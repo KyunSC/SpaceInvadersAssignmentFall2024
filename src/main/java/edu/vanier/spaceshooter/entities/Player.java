@@ -2,11 +2,11 @@ package edu.vanier.spaceshooter.entities;
 
 import edu.vanier.spaceshooter.models.Sprite;
 import javafx.scene.Node;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
+import javafx.scene.image.Image;
 
-import java.awt.*;
-
-public class Player extends Sprite {
+public class Player extends ImageView {
     Sprite sprite;
     private boolean dead = false;
     private final String type;
@@ -15,13 +15,11 @@ public class Player extends Sprite {
     boolean up;
     boolean down;
     int lives = 3;
+    Image spaceShipImage = new Image(String.valueOf(getClass().getResource("/assets/ship.png")));
 
-    public Player(int x, int y, int width, int height, String type, Color color) {
-        super(x, y, width, height, type, color);
+    public Player(int x, int y, int width, int height, String type) {
         this.type = type;
-        setTranslateX(x);
-        setTranslateY(y);
-        this.sprite = new Sprite(x, y, width, height, type, color);
+        this.sprite = new Sprite(x, y, width, height, type, spaceShipImage);
         this.lives = 3;
     }
 
@@ -34,23 +32,23 @@ public class Player extends Sprite {
     public void setDown(boolean down) {this.down = down;}
 
     public void moveLeft() {
-        if (left && up || left && down) sprite.setTranslateX((sprite.getTranslateX() - 5 / Math.sqrt(2)));
-        else if (left) sprite.setTranslateX(sprite.getTranslateX() - 5);
+        if (left && up || left && down) sprite.setLayoutX((getLayoutX() - 5 / Math.sqrt(2)));
+        else if (left) sprite.setLayoutX(getLayoutX() - 5);
     }
 
     public void moveRight() {
-        if (right && up || right && down) sprite.setTranslateX((sprite.getTranslateX() + 5 / Math.sqrt(2)));
-        else if (right) sprite.setTranslateX(sprite.getTranslateX() + 5);
+        if (right && up || right && down) sprite.setLayoutX((getLayoutX() + 5 / Math.sqrt(2)));
+        else if (right) sprite.setLayoutX(getLayoutX() + 5);
     }
 
     public void moveUp() {
-        if (left && up || right && up) sprite.setTranslateY((sprite.getTranslateY() - 5 / Math.sqrt(2)));
-        else if (up) {sprite.setTranslateY(sprite.getTranslateY() - 5);}
+        if (left && up || right && up) sprite.setLayoutY((getLayoutY() - 5 / Math.sqrt(2)));
+        else if (up) {sprite.setLayoutY(getLayoutY() - 5);}
     }
 
     public void moveDown() {
-        if (left && down || right && down) sprite.setTranslateY((sprite.getTranslateY() + 5 / Math.sqrt(2)));
-        else if (down) sprite.setTranslateY(sprite.getTranslateY() + 5);
+        if (left && down || right && down) sprite.setLayoutY((getLayoutY() + 5 / Math.sqrt(2)));
+        else if (down) sprite.setLayoutY(getLayoutY() + 5);
     }
 
     public Sprite getSprite() {

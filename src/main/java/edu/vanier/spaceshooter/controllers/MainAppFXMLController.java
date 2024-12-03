@@ -57,22 +57,6 @@ public class MainAppFXMLController {
         GameEngine gameEngine = new GameEngine(animationPanel, scoreLabel, mainScene, livesLabel, restartButton);
     }
 
-    private void initGameLoop() {
-        // Create the game loop.
-        gameLoop = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                update();
-                spaceShip.moveUp();
-                spaceShip.moveDown();
-                spaceShip.moveLeft();
-                spaceShip.moveRight();
-                shoot(spaceShip.getSprite());
-            }
-        };
-        gameLoop.start();
-    }
-
     private void initShootingDelay(){
         AnimationTimer delay = new AnimationTimer() {
             @Override
@@ -126,17 +110,6 @@ public class MainAppFXMLController {
         });
     }
 
-    private void generateInvaders() {
-        for (int i = 0; i < 5; i++) {
-            Invader invader = new Invader(
-                    90 + i * 100,
-                    150, 30, 30, "enemy",
-                    Color.RED);
-            invaderArrayList.add(invader);
-            animationPanel.getChildren().add(invader.getSprite());
-        }
-    }
-
     /**
      * Retrieves a list of all sprites currently in the animation panel.
      * <p>
@@ -155,32 +128,6 @@ public class MainAppFXMLController {
             }
         }
         return spriteList;
-    }
-
-    /**
-     * Updates the game state for each frame.
-     * <p>
-     * This method increments the elapsed time and processes each sprite based
-     * on its type. It handles the movement and collision detection for enemy
-     * bullets and player bullets, as well as the shooting behavior for enemies.
-     * Dead sprites are removed from the animation panel, and the elapsed time
-     * is reset after a certain threshold.
-     * </p>
-     */
-    private void update() {
-        elapsedTime += 0.016;
-        // Actions to be performed during each frame of the animation.
-        /*invaderArrayList.forEach(this::handleEnemyFiring);*/
-        for (int i = 0; i < invaderArrayList.size(); i++) {
-            handleEnemyFiring(invaderArrayList.get(i));
-        }
-        processProjectiles();
-        removeDeadSprites();
-
-        // Reset the elapsed time.
-        if (elapsedTime > 2) {
-            elapsedTime = 0;
-        }
     }
 
     private void processProjectiles(){
@@ -216,14 +163,6 @@ public class MainAppFXMLController {
         }
     }
 
-    private void handleEnemyFiring(Invader invader) {
-        if (elapsedTime > 2) {
-            if (Math.random() < 0.3) {
-                shoot(invader.getSprite());
-            }
-        }
-    }
-
     /**
      * Removes all dead sprites from the animation panel.
      * <p>
@@ -237,35 +176,6 @@ public class MainAppFXMLController {
             Sprite sprite = (Sprite) n;
             return sprite.isDead();
         });
-    }
-
-    /**
-     * Creates and adds a bullet sprite fired by the specified entity.
-     * <p>
-     * The firing entity can be either an enemy or the spaceship. A bullet is
-     * created at the position of the firing entity with a slight offset to the
-     * right. The bullet's dimensions are set, and it is given a type based on
-     * the firing entity's type.
-     * </p>
-     *
-     * @param firingEntity The entity that is firing the bullet, which can be
-     * either an enemy or the spaceship.
-     */
-    private void shoot(Sprite firingEntity) {
-        if (!shootDelay && !spaceShip.isDead()){
-            // The firing entity can be either an enemy or the spaceship.
-            if (Objects.equals(firingEntity.getType(), "enemy")) {
-                Projectile bullet = new Projectile((int) firingEntity.getTranslateX() + 20, (int) firingEntity.getTranslateY(), 5, 20, firingEntity.getType() + "bullet", Color.DARKMAGENTA);
-                projectileArrayList.add(bullet);
-                animationPanel.getChildren().add(bullet.getSprite());
-            }
-            else if (Objects.equals(firingEntity.getType(), "player") && shooting){
-                Projectile bullet = new Projectile((int) firingEntity.getTranslateX() + 20, (int) firingEntity.getTranslateY(), 5, 20, firingEntity.getType() + "bullet", Color.DARKMAGENTA);
-                projectileArrayList.add(bullet);
-                animationPanel.getChildren().add(bullet.getSprite());
-                shootDelay = true;
-            }
-        }
     }
 
     public void setScene(Scene scene) {

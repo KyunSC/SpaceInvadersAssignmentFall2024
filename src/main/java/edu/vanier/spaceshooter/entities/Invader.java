@@ -1,6 +1,7 @@
 package edu.vanier.spaceshooter.entities;
 
 import edu.vanier.spaceshooter.models.Sprite;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 public class Invader extends Sprite {
@@ -13,12 +14,12 @@ public class Invader extends Sprite {
     private int height;
     private Sprite sprite;
 
-    public Invader(int x, int y, int width, int height, String type, Color color) {
-        super(x, y, width, height, type, color);
+    public Invader(int x, int y, int width, int height, String type, Image image) {
+        super(x, y, width, height, type, image);
         this.type = type;
-        setTranslateX(x);
-        setTranslateY(y);
-        this.sprite = new Sprite(x, y, width, height, type, color);
+        setFitWidth(width);
+        setFitHeight(height);
+        this.sprite = new Sprite(x, y, width, height, type, image);
     }
 
     public void moveLeft() {

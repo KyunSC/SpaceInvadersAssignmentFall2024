@@ -1,6 +1,7 @@
 package edu.vanier.spaceshooter.entities;
 
 import edu.vanier.spaceshooter.models.Sprite;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 public class Projectile extends Sprite {
@@ -8,12 +9,12 @@ public class Projectile extends Sprite {
     Sprite sprite;
     String type;
 
-    public Projectile(int x, int y, int width, int height, String type, Color color) {
-        super(x, y, width, height, type, color);
+    public Projectile(int x, int y, int width, int height, String type, Image image) {
+        super(x, y, width, height, type, image);
+        this.sprite = new Sprite(x, y, width, height, type, image);
         this.type = type;
-        setTranslateX(x);
-        setTranslateY(y);
-        this.sprite = new Sprite(x, y, width, height, type, color);
+        setLayoutX(x);
+        setLayoutY(y);
     }
 
     public void moveUp() {

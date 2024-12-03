@@ -1,40 +1,42 @@
 package edu.vanier.spaceshooter.models;
 
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-public class Sprite extends Rectangle {
+public class Sprite extends ImageView {
 
     private boolean dead = false;
     private final String type;
-    private Color color;
     private int x;
     private int y;
     private int width;
     private int height;
 
-    public Sprite(int x, int y, int width, int height, String type, Color color) {
-        super(width, height, color);
-
+    public Sprite(int x, int y, int width, int height, String type, Image image) {
+        setImage(image);
+        setFitWidth(width);
+        setFitHeight(height);
         this.type = type;
-        setTranslateX(x);
-        setTranslateY(y);
+        setLayoutX(x);
+        setLayoutY(y);
     }
 
     public void moveLeft() {
-        setTranslateX(getTranslateX() - 5);
+        setLayoutX(getLayoutX() - 5);
     }
 
     public void moveRight() {
-        setTranslateX(getTranslateX() + 5);
+        setLayoutX(getLayoutX() + 5);
     }
 
     public void moveUp() {
-        setTranslateY(getTranslateY() - 5);
+        setLayoutY(getLayoutY() - 5);
     }
 
     public void moveDown() {
-        setTranslateY(getTranslateY() + 5);
+        setLayoutY(getLayoutY() + 5);
     }
 
     public boolean isDead() {
@@ -47,9 +49,5 @@ public class Sprite extends Rectangle {
 
     public void setDead(boolean dead) {
         this.dead = dead;
-    }
-
-    public Color getColor(){
-        return color;
     }
 }

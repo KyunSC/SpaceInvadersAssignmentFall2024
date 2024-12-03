@@ -42,6 +42,7 @@ public class GameEngine {
     private boolean shooting = false;
     private ArrayList<Projectile> projectileArrayList = new ArrayList<>();
     private ArrayList<Invader> invaderArrayList = new ArrayList<>();
+    private ArrayList<Sprite> explosionArrayList = new ArrayList<>();
     Pane animationPanel;
     Label scoreLabel;
     Label livesLabel;
@@ -301,9 +302,9 @@ public class GameEngine {
         invaderArrayList.remove(invader);
         spaceShip.setScore(spaceShip.getScore() + 1);
         scoreLabel.setText("Score: " + spaceShip.getScore());
-        animationPanel.getChildren().addFirst(new Sprite(invader.getLayoutX(), invader.getLayoutY(), 40, 40, "GIF", explosion));
+        explosionArrayList.add(new Sprite(invader.getLayoutX(), invader.getLayoutY(), 40, 40, "GIF", explosion));
         Timeline gifTime = new Timeline(new KeyFrame(Duration.millis(500)));
-        gifTime.setOnFinished(event -> animationPanel.getChildren().remove(animationPanel.getChildren().getFirst()));
+        gifTime.setOnFinished(event -> animationPanel.getChildren().remove(explosionArrayList.getFirst()));
         gifTime.setCycleCount(1);
         gifTime.play();
     }

@@ -204,7 +204,7 @@ public class GameEngine {
             handleEnemyFiring(invaderArrayList.get(i));
         }
         processProjectiles();
-//        removeDeadSprites();
+        removeDeadSprites();
 
         // Reset the elapsed time.
         if (elapsedTime > 2) {

@@ -30,23 +30,23 @@ public class Player extends ImageView {
     public void setDown(boolean down) {this.down = down;}
 
     public void moveLeft() {
-        if (left && up || left && down) sprite.setX((getX() - 5 / Math.sqrt(2)));
-        else if (left) sprite.setX(getX() - 5);
+        if (left && up || left && down) sprite.setTranslateX((getTranslateX() - 5 / Math.sqrt(2)));
+        else if (left) sprite.setTranslateX(getTranslateX() - 5);
     }
 
     public void moveRight() {
-        if (right && up || right && down) sprite.setX((getX() + 5 / Math.sqrt(2)));
-        else if (right) sprite.setX(getX() + 5);
+        if (right && up || right && down) sprite.setTranslateX((getTranslateX() + 5 / Math.sqrt(2)));
+        else if (right) sprite.setTranslateX(getTranslateX() + 5);
     }
 
     public void moveUp() {
-        if (left && up || right && up) sprite.setY((getY() - 5 / Math.sqrt(2)));
-        else if (up) {sprite.setY(getY() - 5);}
+        if (left && up || right && up) sprite.setTranslateY((getTranslateY() - 5 / Math.sqrt(2)));
+        else if (up) {sprite.setTranslateY(getTranslateY() - 5);}
     }
 
     public void moveDown() {
-        if (left && down || right && down) sprite.setY((getY() + 5 / Math.sqrt(2)));
-        else if (down) sprite.setY(getY() + 5);
+        if (left && down || right && down) sprite.setTranslateY((getTranslateY() + 5 / Math.sqrt(2)));
+        else if (down) sprite.setTranslateY(getTranslateY() + 5);
     }
 
     public Sprite getSprite() {

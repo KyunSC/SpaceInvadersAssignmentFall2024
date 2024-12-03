@@ -13,16 +13,14 @@ public class Projectile extends Sprite {
         super(x, y, width, height, type, image);
         this.sprite = new Sprite(x, y, width, height, type, image);
         this.type = type;
-        setLayoutX(x);
-        setLayoutY(y);
     }
 
     public void moveUp() {
-        sprite.setTranslateY(sprite.getTranslateY() - 10);
+        sprite.setLayoutY(sprite.getLayoutY() - 10);
     }
 
     public void moveDown() {
-        sprite.setTranslateY(sprite.getTranslateY() + 10);
+        sprite.setLayoutY(sprite.getLayoutY() + 10);
     }
 
     public Sprite getSprite(){

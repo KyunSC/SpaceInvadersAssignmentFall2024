@@ -13,6 +13,8 @@ import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -23,6 +25,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
@@ -283,22 +286,7 @@ public class GameEngine {
     }
 
     private void playerGetsHit(){
-        if (spaceShip.getLives() <= 1) {
-            spaceShip.getSprite().setDead(true);
-            spaceShip.setDead(true);
-            Label dead = new Label("GAME OVER");
-            dead.setStyle("fx: font-color: red");
-            stackPane.getChildren().add(dead);
-            explosionArrayList.addLast(new Sprite(spaceShip.getSprite().getLayoutX(), spaceShip.getSprite().getLayoutY(), 40, 40, "" + spaceShip.getScore(), explosion));
-            animationPanel.getChildren().add(explosionArrayList.getLast());
-            Timeline gifTime = new Timeline(new KeyFrame(Duration.millis(500)));
-            gifTime.setOnFinished(event -> {
-                animationPanel.getChildren().remove(explosionArrayList.getFirst());
-                explosionArrayList.removeFirst();
-            });
-            gifTime.setCycleCount(1);
-            gifTime.play();
-        }
+        if (spaceShip.getLives() <= 1) gameOver();
         spaceShip.setLives(spaceShip.getLives() - 1);
         livesLabel.setText("Lives: " + spaceShip.getLives());
     }
@@ -306,18 +294,36 @@ public class GameEngine {
     private void invaderGetsHit(Invader invader){
         spaceShip.setScore(spaceShip.getScore() + 1);
         scoreLabel.setText("Score: " + spaceShip.getScore());
-        explosionArrayList.addLast(new Sprite(invader.getLayoutX(), invader.getLayoutY(), 40, 40, "" + spaceShip.getScore(), explosion));
-        animationPanel.getChildren().add(explosionArrayList.getLast());
+        handleExplosion(invader.getSprite());
         invader.setDead(true);
         invader.getSprite().setDead(true);
         invaderArrayList.remove(invader);
+
+    }
+
+    private void handleExplosion(Sprite target){
+        explosionArrayList.addLast(new Sprite(target.getLayoutX(), target.getLayoutY(), 40, 40, "" + spaceShip.getScore(), explosion));
+        animationPanel.getChildren().add(explosionArrayList.getLast());
         Timeline gifTime = new Timeline(new KeyFrame(Duration.millis(500)));
         gifTime.setOnFinished(event -> {
-                    animationPanel.getChildren().remove(explosionArrayList.getFirst());
-                    explosionArrayList.removeFirst();
-                });
+            animationPanel.getChildren().remove(explosionArrayList.getFirst());
+            explosionArrayList.removeFirst();
+        });
         gifTime.setCycleCount(1);
         gifTime.play();
+    }
+
+    private void gameOver(){
+        handleExplosion(spaceShip.getSprite());
+        spaceShip.getSprite().setDead(true);
+        spaceShip.setDead(true);
+        VBox vBox = new VBox();
+        Label dead = new Label("GAME OVER");
+        dead.setStyle("-fx-font-size: 40; -fx-text-fill: red");
+        vBox.getChildren().addAll(dead, restartButton);
+        stackPane.getChildren().add(vBox);
+        vBox.setStyle("-fx-alignment: center");
+        handleExplosion(spaceShip.getSprite());
     }
 
     /**

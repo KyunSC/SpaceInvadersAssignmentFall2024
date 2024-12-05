@@ -18,6 +18,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,8 @@ public class MainAppFXMLController {
     private final static Logger logger = LoggerFactory.getLogger(MainAppFXMLController.class);
     @FXML
     private Pane animationPanel;
+    @FXML
+    private StackPane stackPane;
 
     private double elapsedTime = 0;
     private Player spaceShip;
@@ -54,7 +57,7 @@ public class MainAppFXMLController {
     }
 
     public void setupGameWorld() {
-        GameEngine gameEngine = new GameEngine(animationPanel, scoreLabel, mainScene, livesLabel, restartButton);
+        GameEngine gameEngine = new GameEngine(animationPanel, scoreLabel, mainScene, livesLabel, restartButton, stackPane);
     }
 
     private void initShootingDelay(){

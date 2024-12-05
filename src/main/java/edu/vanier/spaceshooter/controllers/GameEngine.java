@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import edu.vanier.spaceshooter.ui.HUD;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -49,23 +50,25 @@ public class GameEngine {
     private ArrayList<Sprite> explosionArrayList = new ArrayList<>();
     Pane animationPanel;
     StackPane stackPane;
-    Label scoreLabel;
-    Label livesLabel;
+    Label scoreLabel = new Label();
+    Label livesLabel = new Label();
     Button restartButton;
     Image mediumInvader = new Image(String.valueOf(getClass().getResource("/assets/enemy-medium.png")));
     Image explosion = new Image(String.valueOf(getClass().getResource("/assets/explosionGIF.gif")));
+    VBox gameOverVBox;
+    HUD hud;
 
 
-    public GameEngine(Pane animationPanel, Label scoreLabel, Scene mainScene, Label livesLabel, Button restartButton, StackPane stackPane) {
+    public GameEngine(Pane animationPanel, VBox HUD, Label levelLabel, Label scoreLabel, Scene mainScene, Label livesLabel, Button restartButton, StackPane stackPane) {
         logger.info("Initializing MainAppController...");
         this.animationPanel = animationPanel;
         this.stackPane = stackPane;
+        this.mainScene = mainScene;
         animationPanel.setPrefSize(600, 800);
         spaceShip = new Player(300, 750, 40, 40, "player");
         animationPanel.getChildren().add(spaceShip.getSprite());
-        this.scoreLabel = scoreLabel;
-        this.mainScene = mainScene;
-        this.livesLabel = livesLabel;
+        HUD = new VBox(); levelLabel = new Label(); scoreLabel = new Label(); livesLabel = new Label();
+        hud = new HUD(HUD, levelLabel, scoreLabel, livesLabel);
         this.restartButton = restartButton;
         scoreLabel.setText("Score: " + spaceShip.getScore());
         livesLabel.setText("Lives: " + spaceShip.getLives());
@@ -86,10 +89,12 @@ public class GameEngine {
             invaderArrayList.clear();
             projectileArrayList.clear();
             animationPanel.getChildren().clear();
+            stackPane.getChildren().remove(gameOverVBox);
             gameLoop.stop();
             delay.stop();
             spaceShip = new Player(300, 750, 40, 40, "player");
-            animationPanel.getChildren().add(spaceShip.getSprite());
+            animationPanel.getChildren().addAll(spaceShip.getSprite());
+            hud.getHUD().getChildren().add(restartButton);
             livesLabel.setText("Lives: " + spaceShip.getLives());
             scoreLabel.setText("Score: " + spaceShip.getScore());
             stopAnimation();
@@ -317,12 +322,13 @@ public class GameEngine {
         handleExplosion(spaceShip.getSprite());
         spaceShip.getSprite().setDead(true);
         spaceShip.setDead(true);
-        VBox vBox = new VBox();
+        gameOverVBox = new VBox();
         Label dead = new Label("GAME OVER");
         dead.setStyle("-fx-font-size: 40; -fx-text-fill: red");
-        vBox.getChildren().addAll(dead, restartButton);
-        stackPane.getChildren().add(vBox);
-        vBox.setStyle("-fx-alignment: center");
+        Button restartOver = restartButton;
+        gameOverVBox.getChildren().addAll(dead, restartOver);
+        stackPane.getChildren().add(gameOverVBox);
+        gameOverVBox.setStyle("-fx-alignment: center");
         handleExplosion(spaceShip.getSprite());
     }
 

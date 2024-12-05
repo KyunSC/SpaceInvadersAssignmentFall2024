@@ -19,6 +19,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,12 +45,17 @@ public class MainAppFXMLController {
     private ArrayList<Projectile> projectileArrayList = new ArrayList<>();
     private ArrayList<Invader> invaderArrayList = new ArrayList<>();
     private int score = 0;
+
+    @FXML
+    private Label levelLabel;
     @FXML
     private Label scoreLabel;
     @FXML
     private Label livesLabel;
     @FXML
     private Button restartButton;
+    @FXML
+    private VBox HUD;
 
     @FXML
     public void initialize() {
@@ -57,10 +63,10 @@ public class MainAppFXMLController {
     }
 
     public void setupGameWorld() {
-        GameEngine gameEngine = new GameEngine(animationPanel, scoreLabel, mainScene, livesLabel, restartButton, stackPane);
+        GameEngine gameEngine = new GameEngine(animationPanel, HUD, levelLabel, scoreLabel, mainScene, livesLabel, restartButton, stackPane);
     }
 
-    private void initShootingDelay(){
+    /*private void initShootingDelay(){
         AnimationTimer delay = new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -78,7 +84,7 @@ public class MainAppFXMLController {
         }
     }
 
-    /**
+    *//**
      * Sets up the key press event handler for the main scene.
      * <p>
      * This handler listens for specific key presses and executes corresponding
@@ -89,7 +95,7 @@ public class MainAppFXMLController {
      * <li>Pressing the SPACE key triggers the spaceship to shoot.</li>
      * </ul>
      * </p>
-     */
+     *//*
     private void setupKeyPressHandlers() {
         // e the key event containing information about the key pressed.
         mainScene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
@@ -113,7 +119,7 @@ public class MainAppFXMLController {
         });
     }
 
-    /**
+    *//**
      * Retrieves a list of all sprites currently in the animation panel.
      * <p>
      * This method iterates through the children of the animation panel and
@@ -121,7 +127,7 @@ public class MainAppFXMLController {
      * </p>
      *
      * @return A list of {@link Sprite} objects found in the animation panel.
-     */
+     *//*
     private List<Sprite> getSprites() {
         List<Sprite> spriteList = new ArrayList<>();
         for (Node n : animationPanel.getChildren()) {
@@ -166,20 +172,20 @@ public class MainAppFXMLController {
         }
     }
 
-    /**
+    *//**
      * Removes all dead sprites from the animation panel.
      * <p>
      * This method iterates through the children of the animation panel and
      * removes any sprite that is marked as dead. It utilizes a lambda
      * expression to filter out the dead sprites efficiently.
      * </p>
-     */
+     *//*
     private void removeDeadSprites() {
         animationPanel.getChildren().removeIf(n -> {
             Sprite sprite = (Sprite) n;
             return sprite.isDead();
         });
-    }
+    }*/
 
     public void setScene(Scene scene) {
         mainScene = scene;

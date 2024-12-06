@@ -16,8 +16,13 @@ public class HUD {
         this.levelLabel = levelLabel;
         this.scoreLabel = scoreLabel;
         this.livesLabel = livesLabel;
-        this.HUD.getChildren().addAll(levelLabel, scoreLabel, livesLabel);
     }
 
     public VBox getHUD() {return HUD;}
+
+    public Label getLevelLabel() {return levelLabel;}
+
+    public Label getLivesLabel() {return livesLabel;}
+
+    public Label setScorelabel(int score) {return new Label("Score: " + score);}
 }

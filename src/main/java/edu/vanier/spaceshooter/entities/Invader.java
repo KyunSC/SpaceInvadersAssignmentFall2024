@@ -22,20 +22,28 @@ public class Invader extends Sprite {
         this.sprite = new Sprite(x, y, width, height, type, image);
     }
 
+    public void movementPattern(){
+        double random = Math.random()*4;
+        if (random < 1) moveLeft();
+        else if (random < 2) moveRight();
+        else if (random < 3) moveUp();
+        else if (random < 4) moveDown();
+    }
+
     public void moveLeft() {
-        sprite.setLayoutX(getLayoutX() - 5);
+        sprite.setLayoutX(sprite.getLayoutX() - 10);
     }
 
     public void moveRight() {
-        sprite.setLayoutX(getLayoutX() + 5);
+        sprite.setLayoutX(sprite.getLayoutX() + 10);
     }
 
     public void moveUp() {
-        sprite.setLayoutY(getLayoutY() - 5);
+        sprite.setLayoutY(sprite.getLayoutY() - 10);
     }
 
     public void moveDown() {
-        sprite.setLayoutY(getLayoutY() + 5);
+        sprite.setLayoutY(sprite.getLayoutY() + 10);
     }
 
     public boolean isDead() {
@@ -49,11 +57,7 @@ public class Invader extends Sprite {
     public void setDead(boolean dead) {
         this.dead = dead;
     }
-
-    public Color getColor(){
-        return color;
-    }
-
+    
     public Sprite getSprite(){
         return sprite;
     }

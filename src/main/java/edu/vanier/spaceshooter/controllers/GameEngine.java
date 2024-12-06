@@ -50,13 +50,14 @@ public class GameEngine {
     private ArrayList<Sprite> explosionArrayList = new ArrayList<>();
     Pane animationPanel;
     StackPane stackPane;
-    Label scoreLabel = new Label();
-    Label livesLabel = new Label();
+    Label levelLabel;
+    Label scoreLabel;
+    Label livesLabel;
     Button restartButton;
     Image mediumInvader = new Image(String.valueOf(getClass().getResource("/assets/enemy-medium.png")));
     Image explosion = new Image(String.valueOf(getClass().getResource("/assets/explosionGIF.gif")));
     VBox gameOverVBox;
-    HUD hud;
+    VBox hud;
 
 
     public GameEngine(Pane animationPanel, VBox HUD, Label levelLabel, Label scoreLabel, Scene mainScene, Label livesLabel, Button restartButton, StackPane stackPane) {
@@ -64,23 +65,33 @@ public class GameEngine {
         this.animationPanel = animationPanel;
         this.stackPane = stackPane;
         this.mainScene = mainScene;
+        this.hud = HUD;
+        this.levelLabel = levelLabel;
+        this.scoreLabel = scoreLabel;
+        this.livesLabel = livesLabel;
+        this.restartButton = restartButton;
         animationPanel.setPrefSize(600, 800);
         spaceShip = new Player(300, 750, 40, 40, "player");
         animationPanel.getChildren().add(spaceShip.getSprite());
-        HUD = new VBox(); levelLabel = new Label(); scoreLabel = new Label(); livesLabel = new Label();
-        hud = new HUD(HUD, levelLabel, scoreLabel, livesLabel);
-        this.restartButton = restartButton;
-        scoreLabel.setText("Score: " + spaceShip.getScore());
-        livesLabel.setText("Lives: " + spaceShip.getLives());
         setupGameWorld();
     }
 
     public void setupGameWorld() {
+        setUpHud();
         initGameLoop();
         setupKeyPressHandlers();
         generateInvaders();
         initShootingDelay();
         initRestartButton();
+    }
+
+    private void setUpHud(){
+        scoreLabel.setText("Score: " + spaceShip.getScore());
+        livesLabel.setText("Lives: " + spaceShip.getLives());
+        spaceShip.setStackPane(stackPane);
+        stackPane.widthProperty().addListener((observable, oldValue, newValue) -> {
+            spaceShip.setStackPane(stackPane);
+        });
     }
 
     private void initRestartButton() {
@@ -93,8 +104,10 @@ public class GameEngine {
             gameLoop.stop();
             delay.stop();
             spaceShip = new Player(300, 750, 40, 40, "player");
+            spaceShip.setStackPane(stackPane);
             animationPanel.getChildren().addAll(spaceShip.getSprite());
-            hud.getHUD().getChildren().add(restartButton);
+            hud.getChildren().remove(restartButton);
+            hud.getChildren().add(restartButton);
             livesLabel.setText("Lives: " + spaceShip.getLives());
             scoreLabel.setText("Score: " + spaceShip.getScore());
             stopAnimation();
@@ -224,6 +237,12 @@ public class GameEngine {
         processProjectiles();
         removeDeadSprites();
         spaceShipCollisions();
+
+        if (elapsedTime % 0.016 == 0) {
+            for (int i = 0; i < invaderArrayList.size(); i++) {
+                invaderArrayList.get(i).movementPattern();
+            }
+        }
 
         // Reset the elapsed time.
         if (elapsedTime > 2) {

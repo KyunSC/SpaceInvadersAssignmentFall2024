@@ -1,8 +1,10 @@
 package edu.vanier.spaceshooter.entities;
 
 import edu.vanier.spaceshooter.models.Sprite;
+import javafx.geometry.BoundingBox;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
+import javafx.scene.layout.StackPane;
 
 public class Player extends ImageView {
     Sprite sprite;
@@ -15,6 +17,8 @@ public class Player extends ImageView {
     int lives;
     int score = 0;
     Image spaceShipImage = new Image(String.valueOf(getClass().getResource("/assets/ship.png")));
+    StackPane stackPane;
+
 
     public Player(int x, int y, int width, int height, String type) {
         this.type = type;
@@ -32,23 +36,31 @@ public class Player extends ImageView {
     public void setDown(boolean down) {this.down = down;}
 
     public void moveLeft() {
-        if (left && up || left && down) sprite.setLayoutX((sprite.getLayoutX() - 5 / Math.sqrt(2)));
-        else if (left) sprite.setLayoutX(sprite.getLayoutX() - 5);
+        if (sprite.getLayoutX() > 0) {
+            if (left && up || left && down) sprite.setLayoutX((sprite.getLayoutX() - 5 / Math.sqrt(2)));
+            else if (left) sprite.setLayoutX(sprite.getLayoutX() - 5);
+        }
     }
 
     public void moveRight() {
-        if (right && up || right && down) sprite.setLayoutX((sprite.getLayoutX() + 5 / Math.sqrt(2)));
-        else if (right) sprite.setLayoutX(sprite.getLayoutX() + 5);
+        if (sprite.getLayoutX() < stackPane.getWidth() - 40) {
+            if (right && up || right && down) sprite.setLayoutX((sprite.getLayoutX() + 5 / Math.sqrt(2)));
+            else if (right) sprite.setLayoutX(sprite.getLayoutX() + 5);
+        }
     }
 
     public void moveUp() {
-        if (left && up || right && up) sprite.setLayoutY((sprite.getLayoutY() - 5 / Math.sqrt(2)));
-        else if (up) {sprite.setLayoutY(sprite.getLayoutY() - 5);}
+        if (sprite.getLayoutY() > 0) {
+            if (left && up || right && up) sprite.setLayoutY((sprite.getLayoutY() - 5 / Math.sqrt(2)));
+            else if (up) sprite.setLayoutY(sprite.getLayoutY() - 5);
+        }
     }
 
     public void moveDown() {
-        if (left && down || right && down) sprite.setLayoutY((sprite.getLayoutY() + 5 / Math.sqrt(2)));
-        else if (down) sprite.setLayoutY(sprite.getLayoutY() + 5);
+        if (sprite.getLayoutY() < stackPane.getHeight() - 40) {
+            if (left && down || right && down) sprite.setLayoutY((sprite.getLayoutY() + 5 / Math.sqrt(2)));
+            else if (down) sprite.setLayoutY(sprite.getLayoutY() + 5);
+        }
     }
 
     public Sprite getSprite() {
@@ -74,4 +86,8 @@ public class Player extends ImageView {
     public int getScore(){return score;}
 
     public void setScore(int score){this.score = score;}
+
+    public void setStackPane(StackPane stackPane){
+        this.stackPane = stackPane;
+    }
 }

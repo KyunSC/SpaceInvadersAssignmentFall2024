@@ -73,14 +73,14 @@ public class GameEngine {
         animationPanel.setPrefSize(600, 800);
         spaceShip = new Player(300, 750, 40, 40, "player");
         animationPanel.getChildren().add(spaceShip.getSprite());
+        setUpHud();
         setupGameWorld();
     }
 
     public void setupGameWorld() {
-        setUpHud();
+        generateInvaders();
         initGameLoop();
         setupKeyPressHandlers();
-        generateInvaders();
         initShootingDelay();
         initRestartButton();
     }

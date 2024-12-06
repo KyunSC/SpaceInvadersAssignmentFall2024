@@ -18,6 +18,7 @@ public class Player extends ImageView {
     int score = 0;
     Image spaceShipImage = new Image(String.valueOf(getClass().getResource("/assets/ship.png")));
     StackPane stackPane;
+    int speedUp = 1;
 
 
     public Player(int x, int y, int width, int height, String type) {
@@ -37,29 +38,29 @@ public class Player extends ImageView {
 
     public void moveLeft() {
         if (sprite.getLayoutX() > 0) {
-            if (left && up || left && down) sprite.setLayoutX((sprite.getLayoutX() - 5 / Math.sqrt(2)));
-            else if (left) sprite.setLayoutX(sprite.getLayoutX() - 5);
+            if (left && up || left && down) sprite.setLayoutX((sprite.getLayoutX() - (5*speedUp) / Math.sqrt(2)));
+            else if (left) sprite.setLayoutX(sprite.getLayoutX() - (5*speedUp));
         }
     }
 
     public void moveRight() {
         if (sprite.getLayoutX() < stackPane.getWidth() - 40) {
-            if (right && up || right && down) sprite.setLayoutX((sprite.getLayoutX() + 5 / Math.sqrt(2)));
-            else if (right) sprite.setLayoutX(sprite.getLayoutX() + 5);
+            if (right && up || right && down) sprite.setLayoutX((sprite.getLayoutX() + (5*speedUp) / Math.sqrt(2)));
+            else if (right) sprite.setLayoutX(sprite.getLayoutX() + (5*speedUp));
         }
     }
 
     public void moveUp() {
         if (sprite.getLayoutY() > 0) {
-            if (left && up || right && up) sprite.setLayoutY((sprite.getLayoutY() - 5 / Math.sqrt(2)));
-            else if (up) sprite.setLayoutY(sprite.getLayoutY() - 5);
+            if (left && up || right && up) sprite.setLayoutY((sprite.getLayoutY() - (5*speedUp) / Math.sqrt(2)));
+            else if (up) sprite.setLayoutY(sprite.getLayoutY() - (5*speedUp));
         }
     }
 
     public void moveDown() {
         if (sprite.getLayoutY() < stackPane.getHeight() - 40) {
             if (left && down || right && down) sprite.setLayoutY((sprite.getLayoutY() + 5 / Math.sqrt(2)));
-            else if (down) sprite.setLayoutY(sprite.getLayoutY() + 5);
+            else if (down) sprite.setLayoutY(sprite.getLayoutY() + (5*speedUp));
         }
     }
 
@@ -89,5 +90,9 @@ public class Player extends ImageView {
 
     public void setStackPane(StackPane stackPane){
         this.stackPane = stackPane;
+    }
+
+    public void setSpeedUp(int speedUp) {
+        this.speedUp = speedUp;
     }
 }

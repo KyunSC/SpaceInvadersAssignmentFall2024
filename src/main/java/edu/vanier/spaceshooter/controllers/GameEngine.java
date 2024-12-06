@@ -91,6 +91,9 @@ public class GameEngine {
         spaceShip.setStackPane(stackPane);
         stackPane.widthProperty().addListener((observable, oldValue, newValue) -> {
             spaceShip.setStackPane(stackPane);
+            for (int i = 0; i < invaderArrayList.size(); i++) {
+                invaderArrayList.get(i).setStackPane(stackPane);
+            }
         });
     }
 
@@ -171,6 +174,7 @@ public class GameEngine {
                 case KeyCode.D: spaceShip.setRight(true);break;
                 case KeyCode.W: spaceShip.setUp(true);break;
                 case KeyCode.S: spaceShip.setDown(true);break;
+                case KeyCode.SHIFT: spaceShip.setSpeedUp(2); break;
                 case KeyCode.SPACE: shooting = true;
             }
         });
@@ -181,6 +185,7 @@ public class GameEngine {
                 case KeyCode.D: spaceShip.setRight(false); break;
                 case KeyCode.W: spaceShip.setUp(false); break;
                 case KeyCode.S: spaceShip.setDown(false); break;
+                case KeyCode.SHIFT: spaceShip.setSpeedUp(1); break;
                 case KeyCode.SPACE: shooting = false;
             }
         });
@@ -189,9 +194,9 @@ public class GameEngine {
     private void generateInvaders() {
         for (int i = 0; i < 5; i++) {
             Invader invader = new Invader(
-                    90 + i * 100,
+                    100 + i * 300,
                     150, 30, 30, "enemy",
-                    mediumInvader);
+                    mediumInvader, stackPane);
             invaderArrayList.add(invader);
             animationPanel.getChildren().add(invader.getSprite());
         }
@@ -238,9 +243,15 @@ public class GameEngine {
         removeDeadSprites();
         spaceShipCollisions();
 
-        if (elapsedTime % 0.016 == 0) {
+
+        if (elapsedTime == 0.016) {
             for (int i = 0; i < invaderArrayList.size(); i++) {
-                invaderArrayList.get(i).movementPattern();
+                invaderArrayList.get(i).setMoving(true);
+                int random = (int)Math.ceil(Math.random()*4);
+                if (random == 1) invaderArrayList.get(i).moveUp();
+                if (random == 2) invaderArrayList.get(i).moveDown();
+                if (random == 3) invaderArrayList.get(i).moveLeft();
+                if (random == 4) invaderArrayList.get(i).moveRight();
             }
         }
 
@@ -284,7 +295,7 @@ public class GameEngine {
     private void handlePlayerBullet(Projectile projectile) {
         projectile.moveUp();
         for (int i = 0; i < invaderArrayList.size(); i++) {
-            if (projectile.getSprite().getBoundsInParent().intersects(invaderArrayList.get(i).getBoundsInParent())) {
+            if (invaderArrayList.get(i).getSprite().getBoundsInParent().intersects(projectile.getSprite().getBoundsInParent())) {
                 projectile.setDead(true);
                 projectile.getSprite().setDead(true);
                 invaderGetsHit(invaderArrayList.get(i));

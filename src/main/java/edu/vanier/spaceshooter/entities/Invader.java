@@ -2,7 +2,10 @@ package edu.vanier.spaceshooter.entities;
 
 import edu.vanier.spaceshooter.models.Sprite;
 import javafx.scene.image.Image;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+
+import java.util.Stack;
 
 public class Invader extends Sprite {
     private boolean dead = false;
@@ -13,9 +16,12 @@ public class Invader extends Sprite {
     private int width;
     private int height;
     private Sprite sprite;
+    private boolean moving = false;
+    private StackPane stackPane;
 
-    public Invader(int x, int y, int width, int height, String type, Image image) {
+    public Invader(int x, int y, int width, int height, String type, Image image, StackPane stackPane) {
         super(x, y, width, height, type, image);
+        this.stackPane = stackPane;
         this.type = type;
         setFitWidth(width);
         setFitHeight(height);
@@ -23,27 +29,35 @@ public class Invader extends Sprite {
     }
 
     public void movementPattern(){
-        double random = Math.random()*4;
-        if (random < 1) moveLeft();
-        else if (random < 2) moveRight();
-        else if (random < 3) moveUp();
-        else if (random < 4) moveDown();
+        double random = Math.ceil(Math.random()*4);
+        if (random == 1) moveUp();
+        else if (random == 2) moveDown();
+        else if (random == 3) moveLeft();
+        else if (random == 4) moveRight();
     }
 
     public void moveLeft() {
-        sprite.setLayoutX(sprite.getLayoutX() - 10);
+        if (moving) {
+            if (sprite.getLayoutX() > 0) sprite.setLayoutX(sprite.getLayoutX() - 40);
+        }
     }
 
     public void moveRight() {
-        sprite.setLayoutX(sprite.getLayoutX() + 10);
+        if (moving) {
+            if (sprite.getLayoutY() < stackPane.getWidth())sprite.setLayoutX(sprite.getLayoutX() + 40);
+        }
     }
 
     public void moveUp() {
-        sprite.setLayoutY(sprite.getLayoutY() - 10);
+        if (moving) {
+            if (sprite.getLayoutY() > 0)sprite.setLayoutY(sprite.getLayoutY() - 40);
+        }
     }
 
     public void moveDown() {
-        sprite.setLayoutY(sprite.getLayoutY() + 10);
+        if (moving) {
+            if (sprite.getLayoutY() < stackPane.getHeight())sprite.setLayoutY(sprite.getLayoutY() + 40);
+        }
     }
 
     public boolean isDead() {
@@ -57,8 +71,16 @@ public class Invader extends Sprite {
     public void setDead(boolean dead) {
         this.dead = dead;
     }
-    
+
     public Sprite getSprite(){
         return sprite;
+    }
+
+    public void setMoving(boolean moving) {
+        this.moving = moving;
+    }
+
+    public void setStackPane(StackPane stackPane) {
+        this.stackPane = stackPane;
     }
 }

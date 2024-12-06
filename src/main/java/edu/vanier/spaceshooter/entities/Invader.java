@@ -16,8 +16,13 @@ public class Invader extends Sprite {
     private int width;
     private int height;
     private Sprite sprite;
-    private boolean moving = false;
     private StackPane stackPane;
+    private boolean moving = false;
+    private boolean left = false;
+    private boolean right= false;
+    private boolean up = false;
+    private boolean down = false;
+
 
     public Invader(int x, int y, int width, int height, String type, Image image, StackPane stackPane) {
         super(x, y, width, height, type, image);
@@ -37,26 +42,26 @@ public class Invader extends Sprite {
     }
 
     public void moveLeft() {
-        if (moving) {
-            if (sprite.getLayoutX() > 0) sprite.setLayoutX(sprite.getLayoutX() - 40);
+        if (left) {
+            if (sprite.getLayoutX() > 0) sprite.setLayoutX(sprite.getLayoutX() - 5);
         }
     }
 
     public void moveRight() {
-        if (moving) {
-            if (sprite.getLayoutY() < stackPane.getWidth())sprite.setLayoutX(sprite.getLayoutX() + 40);
+        if (right) {
+            if (sprite.getLayoutY() < stackPane.getWidth())sprite.setLayoutX(sprite.getLayoutX() + 5);
         }
     }
 
     public void moveUp() {
-        if (moving) {
-            if (sprite.getLayoutY() > 0)sprite.setLayoutY(sprite.getLayoutY() - 40);
+        if (up) {
+            if (sprite.getLayoutY() > 0)sprite.setLayoutY(sprite.getLayoutY() - 5);
         }
     }
 
     public void moveDown() {
-        if (moving) {
-            if (sprite.getLayoutY() < stackPane.getHeight())sprite.setLayoutY(sprite.getLayoutY() + 40);
+        if (down) {
+            if (sprite.getLayoutY() < stackPane.getHeight())sprite.setLayoutY(sprite.getLayoutY() + 5);
         }
     }
 
@@ -82,5 +87,24 @@ public class Invader extends Sprite {
 
     public void setStackPane(StackPane stackPane) {
         this.stackPane = stackPane;
+    }
+
+    public void setLeft(boolean left) {
+        this.left = left;
+    }
+    public void setRight(boolean right) {
+        this.right = right;
+    }
+    public void setUp(boolean up) {
+        this.up = up;
+    }
+    public void setDown(boolean down) {
+        this.down = down;
+    }
+    public void reset(){
+        this.up = false;
+        this.down = false;
+        this.left = false;
+        this.right = false;
     }
 }

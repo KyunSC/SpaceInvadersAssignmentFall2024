@@ -95,27 +95,34 @@ public class GameEngine {
                 invaderArrayList.get(i).setStackPane(stackPane);
             }
         });
+        mainScene.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
+            if (Objects.requireNonNull(event.getCode()) == KeyCode.R) {
+                restart();
+            }
+        });
     }
 
     private void initRestartButton() {
         restartButton.setFocusTraversable(false);
-        restartButton.setOnAction(event -> {
-            invaderArrayList.clear();
-            projectileArrayList.clear();
-            animationPanel.getChildren().clear();
-            stackPane.getChildren().remove(gameOverVBox);
-            gameLoop.stop();
-            delay.stop();
-            spaceShip = new Player(300, 750, 40, 40, "player");
-            spaceShip.setStackPane(stackPane);
-            animationPanel.getChildren().addAll(spaceShip.getSprite());
-            hud.getChildren().remove(restartButton);
-            hud.getChildren().add(restartButton);
-            livesLabel.setText("Lives: " + spaceShip.getLives());
-            scoreLabel.setText("Score: " + spaceShip.getScore());
-            stopAnimation();
-            setupGameWorld();
-        });
+        restartButton.setOnAction(event -> restart());
+    }
+
+    private void restart(){
+        invaderArrayList.clear();
+        projectileArrayList.clear();
+        animationPanel.getChildren().clear();
+        stackPane.getChildren().remove(gameOverVBox);
+        gameLoop.stop();
+        delay.stop();
+        spaceShip = new Player(300, 750, 40, 40, "player");
+        spaceShip.setStackPane(stackPane);
+        animationPanel.getChildren().addAll(spaceShip.getSprite());
+        hud.getChildren().remove(restartButton);
+        hud.getChildren().add(restartButton);
+        livesLabel.setText("Lives: " + spaceShip.getLives());
+        scoreLabel.setText("Score: " + spaceShip.getScore());
+        stopAnimation();
+        setupGameWorld();
     }
 
     private void initGameLoop() {
@@ -175,7 +182,7 @@ public class GameEngine {
                 case KeyCode.W: spaceShip.setUp(true);break;
                 case KeyCode.S: spaceShip.setDown(true);break;
                 case KeyCode.SHIFT: spaceShip.setSpeedUp(2); break;
-                case KeyCode.SPACE: shooting = true;
+                case KeyCode.SPACE: shooting = true; break;
             }
         });
 
@@ -243,15 +250,28 @@ public class GameEngine {
         removeDeadSprites();
         spaceShipCollisions();
 
-
-        if (elapsedTime == 0.016) {
+            for (int i = 0; i < invaderArrayList.size(); i++) {
+                invaderArrayList.get(i).setMoving(true);
+                invaderArrayList.get(i).moveUp();
+                invaderArrayList.get(i).moveDown();
+                invaderArrayList.get(i).moveLeft();
+                invaderArrayList.get(i).moveRight();
+            }
+        if (elapsedTime == 0.016){
             for (int i = 0; i < invaderArrayList.size(); i++) {
                 invaderArrayList.get(i).setMoving(true);
                 int random = (int)Math.ceil(Math.random()*4);
-                if (random == 1) invaderArrayList.get(i).moveUp();
-                if (random == 2) invaderArrayList.get(i).moveDown();
-                if (random == 3) invaderArrayList.get(i).moveLeft();
-                if (random == 4) invaderArrayList.get(i).moveRight();
+                if (random == 1) invaderArrayList.get(i).setUp(true);
+                if (random == 2) invaderArrayList.get(i).setDown(true);
+                if (random == 3) invaderArrayList.get(i).setLeft(true);
+                if (random == 4) invaderArrayList.get(i).setRight(true);
+            }
+        }
+
+        if (elapsedTime == 0.096){
+            for (int i = 0; i < invaderArrayList.size(); i++) {
+                invaderArrayList.get(i).setMoving(false);
+                invaderArrayList.get(i).reset();
             }
         }
 

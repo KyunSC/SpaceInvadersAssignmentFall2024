@@ -5,10 +5,10 @@
 <?import javafx.scene.layout.*?>
 
 <StackPane fx:id="stackPane" prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
-   <Pane fx:id="animationPanel" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-image: url(&quot;images/stars.png&quot;); -fx-background-size: 1920 1080; -fx-background-position: center center;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" />
+   <Pane fx:id="animationPanel" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-image: url(&quot;images/singularity.jpg&quot;); -fx-background-size: 1920 1080; -fx-background-position: center center;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" />
    <VBox fx:id="HUD" prefHeight="200.0" prefWidth="100.0">
       <children>
-         <Label fx:id="levelLabel" text="Level 1" textFill="#0380ff">
+         <Label fx:id="levelLabel" text="Level 2" textFill="#0380ff">
             <VBox.margin>
                <Insets left="10.0" top="10.0" />
             </VBox.margin>

@@ -1,7 +1,6 @@
 package edu.vanier.spaceshooter.entities;
 
 import edu.vanier.spaceshooter.models.Sprite;
-import javafx.geometry.BoundingBox;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
@@ -16,7 +15,7 @@ public class Player extends ImageView {
     boolean down;
     int lives;
     int score = 0;
-    Image spaceShipImage = new Image(String.valueOf(getClass().getResource("/assets/ship.png")));
+    Image spaceShipImage = new Image(String.valueOf(getClass().getResource("/images/ship.png")));
     StackPane stackPane;
     int speedUp = 1;
 

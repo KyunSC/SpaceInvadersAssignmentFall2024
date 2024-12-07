@@ -3,10 +3,6 @@ package edu.vanier.spaceshooter.controllers;
 import edu.vanier.spaceshooter.entities.Invader;
 import edu.vanier.spaceshooter.entities.Player;
 import edu.vanier.spaceshooter.entities.Projectile;
-
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicReference;
-
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -20,12 +16,14 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+
 /**
  * FXML Controller class of the MainApp UI.
  */
-public class MainAppFXMLController {
+public class SecondFXMLController {
 
-    private final static Logger logger = LoggerFactory.getLogger(MainAppFXMLController.class);
+    private final static Logger logger = LoggerFactory.getLogger(SecondFXMLController.class);
     @FXML
     private Pane animationPanel;
     @FXML
@@ -62,9 +60,8 @@ public class MainAppFXMLController {
     @FXML
     public void initialize() {
         introBox = new VBox();
-        welcomeMessage = new Label("Welcome to Space Invaders!");
         start = new Button("Start");
-        introBox.getChildren().addAll(welcomeMessage, start);
+        introBox.getChildren().addAll(start);
         introBox.setAlignment(Pos.CENTER);
         stackPane.getChildren().add(introBox);
         start.setOnAction(event -> setupGameWorld());
@@ -83,9 +80,5 @@ public class MainAppFXMLController {
         if (gameLoop != null) {
             gameLoop.stop();
         }
-    }
-
-    public void setPrimaryStage(Stage primaryStage){
-        this.primaryStage = primaryStage;
     }
 }

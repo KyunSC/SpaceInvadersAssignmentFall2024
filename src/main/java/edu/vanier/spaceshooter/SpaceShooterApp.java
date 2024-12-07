@@ -30,7 +30,7 @@ public class SpaceShooterApp extends Application {
             //-- 2) Create and set the scene to the stage.
             Scene scene = new Scene(root, 1568, 1080);
             controller.setScene(scene);
-            controller.setupGameWorld();
+            controller.setPrimaryStage(primaryStage);
             primaryStage.setScene(scene);
             primaryStage.setTitle("Space Invaders!");
             primaryStage.sizeToScene();

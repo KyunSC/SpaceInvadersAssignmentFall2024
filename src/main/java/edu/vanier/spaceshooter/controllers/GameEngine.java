@@ -9,37 +9,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import edu.vanier.spaceshooter.ui.HUD;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.fxml.FXML;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
 
 public class GameEngine {
     private final static Logger logger = LoggerFactory.getLogger(MainAppFXMLController.class);
     private double elapsedTime = 0;
     private Player spaceShip;
     private Scene mainScene;
+    private Stage primaryStage;
     AnimationTimer gameLoop;
     AnimationTimer delay;
     private boolean shootDelay = false;
@@ -54,13 +48,14 @@ public class GameEngine {
     Label scoreLabel;
     Label livesLabel;
     Button restartButton;
-    Image mediumInvader = new Image(String.valueOf(getClass().getResource("/assets/enemy-medium.png")));
-    Image explosion = new Image(String.valueOf(getClass().getResource("/assets/explosionGIF.gif")));
+    Image mediumInvader = new Image(String.valueOf(getClass().getResource("/images/enemy-medium.png")));
+    Image explosion = new Image(String.valueOf(getClass().getResource("/images/explosionGIF.gif")));
     VBox gameOverVBox;
     VBox hud;
+    int level = 1;
 
 
-    public GameEngine(Pane animationPanel, VBox HUD, Label levelLabel, Label scoreLabel, Scene mainScene, Label livesLabel, Button restartButton, StackPane stackPane) {
+    public GameEngine(Stage primaryStage, Pane animationPanel, VBox HUD, Label levelLabel, Label scoreLabel, Scene mainScene, Label livesLabel, Button restartButton, StackPane stackPane) {
         logger.info("Initializing MainAppController...");
         this.animationPanel = animationPanel;
         this.stackPane = stackPane;
@@ -70,6 +65,7 @@ public class GameEngine {
         this.scoreLabel = scoreLabel;
         this.livesLabel = livesLabel;
         this.restartButton = restartButton;
+        this.primaryStage = primaryStage;
         animationPanel.setPrefSize(600, 800);
         spaceShip = new Player(300, 750, 40, 40, "player");
         animationPanel.getChildren().add(spaceShip.getSprite());
@@ -199,13 +195,25 @@ public class GameEngine {
     }
 
     private void generateInvaders() {
-        for (int i = 0; i < 5; i++) {
-            Invader invader = new Invader(
-                    100 + i * 300,
-                    150, 30, 30, "enemy",
-                    mediumInvader, stackPane);
-            invaderArrayList.add(invader);
-            animationPanel.getChildren().add(invader.getSprite());
+        if (level ==1) {
+            for (int i = 0; i < 5; i++) {
+                Invader invader = new Invader(
+                        100 + i * 300,
+                        150, 30, 30, "enemy",
+                        mediumInvader, stackPane);
+                invaderArrayList.add(invader);
+                animationPanel.getChildren().add(invader.getSprite());
+            }
+        }
+        else if (level == 2){
+            for (int i = 0; i < 10; i++) {
+                Invader invader = new Invader(
+                        100 + i * 100,
+                        150, 30, 30, "enemy",
+                        mediumInvader, stackPane);
+                invaderArrayList.add(invader);
+                animationPanel.getChildren().add(invader.getSprite());
+            }
         }
     }
 
@@ -354,6 +362,12 @@ public class GameEngine {
         invader.getSprite().setDead(true);
         invaderArrayList.remove(invader);
 
+        if (invaderArrayList.isEmpty()){
+            if (level == 1) animationPanel.setStyle("-fx-background-image: url(/images/singularity.jpg)");
+            else animationPanel.setStyle("-fx-background-image: url(/images/spaceTime.jpg)");
+            level++;
+            generateInvaders();
+        }
     }
 
     private void handleExplosion(Sprite target){

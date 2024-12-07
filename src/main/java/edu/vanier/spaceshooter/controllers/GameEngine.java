@@ -12,7 +12,6 @@ import java.util.Objects;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -23,6 +22,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.AudioClip;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.slf4j.Logger;
@@ -48,10 +48,12 @@ public class GameEngine {
     Label scoreLabel;
     Label livesLabel;
     Button restartButton;
-    Image mediumInvader = new Image(String.valueOf(getClass().getResource("/images/enemy-medium.png")));
-    Image explosion = new Image(String.valueOf(getClass().getResource("/images/explosionGIF.gif")));
-    Image invaderBullet = new Image(String.valueOf(getClass().getResource("/images/invaderBullet.png")));
-    Image playerBullet = new Image(String.valueOf(getClass().getResource("/images/playerBullet.png")));
+    Image mediumInvader = new Image((Objects.requireNonNull(getClass().getResource("/images/enemy-medium.png"))).toExternalForm());
+    Image explosion = new Image((Objects.requireNonNull(getClass().getResource("/images/explosionGIF.gif"))).toExternalForm());
+    Image invaderBullet = new Image(Objects.requireNonNull(getClass().getResource("/images/invaderBullet.png")).toExternalForm());
+    Image playerBullet = new Image(Objects.requireNonNull(getClass().getResource("/images/playerBullet.png")).toExternalForm());
+    AudioClip playerShoot = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/blaster.mp3")).toExternalForm());
+    AudioClip explosionSound = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/explosion.mp3")).toExternalForm());
     VBox gameOverVBox;
     VBox hud;
     int level = 1;
@@ -180,7 +182,7 @@ public class GameEngine {
                 case KeyCode.W: spaceShip.setUp(true);break;
                 case KeyCode.S: spaceShip.setDown(true);break;
                 case KeyCode.SHIFT: spaceShip.setSpeedUp(2); break;
-                case KeyCode.SPACE: shooting = true; break;
+                case KeyCode.SPACE: shooting = true;break;
             }
         });
 
@@ -303,9 +305,7 @@ public class GameEngine {
 
     private void processProjectiles(){
         for (int i = 0; i < projectileArrayList.size(); i++) {
-            if (Objects.equals(projectileArrayList.get(i).getType(), "enemybullet")) {
-                handleEnemyBullet(projectileArrayList.get(i));
-            }
+            if (Objects.equals(projectileArrayList.get(i).getType(), "enemybullet")) handleEnemyBullet(projectileArrayList.get(i));
             else if (Objects.equals(projectileArrayList.get(i).getType(), "playerbullet")) handlePlayerBullet(projectileArrayList.get(i));
         }
     }
@@ -367,6 +367,7 @@ public class GameEngine {
     }
 
     private void invaderGetsHit(Invader invader){
+        explosionSound.play();
         spaceShip.setScore(spaceShip.getScore() + 1);
         scoreLabel.setText("Score: " + spaceShip.getScore());
         handleExplosion(invader.getSprite());
@@ -438,16 +439,17 @@ public class GameEngine {
     private void shoot(Sprite firingEntity) {
         if (!shootDelay && !spaceShip.isDead()){
             // The firing entity can be either an enemy or the spaceship.
-            if (Objects.equals(firingEntity.getType(), "enemy")) {
-                Projectile bullet = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 20, 40, firingEntity.getType() + "bullet", invaderBullet);
-                projectileArrayList.add(bullet);
-                animationPanel.getChildren().add(bullet.getSprite());
-            }
-            else if (Objects.equals(firingEntity.getType(), "player") && shooting){
+            if (Objects.equals(firingEntity.getType(), "player") && shooting){
+                playerShoot.play();
                 Projectile bullet = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 20, 40, firingEntity.getType() + "bullet", playerBullet);
                 projectileArrayList.add(bullet);
                 animationPanel.getChildren().add(bullet.getSprite());
                 shootDelay = true;
+            }
+            else if (Objects.equals(firingEntity.getType(), "enemy")) {
+                Projectile bullet = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 20, 40, firingEntity.getType() + "bullet", invaderBullet);
+                projectileArrayList.add(bullet);
+                animationPanel.getChildren().add(bullet.getSprite());
             }
         }
     }

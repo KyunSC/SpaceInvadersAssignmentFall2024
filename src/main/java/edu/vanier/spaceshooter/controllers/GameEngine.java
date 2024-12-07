@@ -130,12 +130,12 @@ public class GameEngine {
         gameLoop = new AnimationTimer() {
             @Override
             public void handle(long now) {
+                shoot(spaceShip.getSprite());
                 update();
                 spaceShip.moveUp();
                 spaceShip.moveDown();
                 spaceShip.moveLeft();
                 spaceShip.moveRight();
-                shoot(spaceShip.getSprite());
             }
         };
         gameLoop.start();
@@ -182,7 +182,10 @@ public class GameEngine {
                 case KeyCode.W: spaceShip.setUp(true);break;
                 case KeyCode.S: spaceShip.setDown(true);break;
                 case KeyCode.SHIFT: spaceShip.setSpeedUp(2); break;
-                case KeyCode.SPACE: shooting = true;break;
+                case KeyCode.SPACE: {
+                    shooting = true;
+                    break;
+                }
             }
         });
 
@@ -306,7 +309,9 @@ public class GameEngine {
     private void processProjectiles(){
         for (int i = 0; i < projectileArrayList.size(); i++) {
             if (Objects.equals(projectileArrayList.get(i).getType(), "enemybullet")) handleEnemyBullet(projectileArrayList.get(i));
-            else if (Objects.equals(projectileArrayList.get(i).getType(), "playerbullet")) handlePlayerBullet(projectileArrayList.get(i));
+            else if (Objects.equals(projectileArrayList.get(i).getType(), "playerbullet")) {
+                handlePlayerBullet(projectileArrayList.get(i));
+            }
         }
     }
 

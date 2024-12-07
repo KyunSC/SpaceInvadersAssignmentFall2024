@@ -50,6 +50,8 @@ public class GameEngine {
     Button restartButton;
     Image mediumInvader = new Image(String.valueOf(getClass().getResource("/images/enemy-medium.png")));
     Image explosion = new Image(String.valueOf(getClass().getResource("/images/explosionGIF.gif")));
+    Image invaderBullet = new Image(String.valueOf(getClass().getResource("/images/invaderBullet.png")));
+    Image playerBullet = new Image(String.valueOf(getClass().getResource("/images/playerBullet.png")));
     VBox gameOverVBox;
     VBox hud;
     int level = 1;
@@ -91,7 +93,7 @@ public class GameEngine {
                 invaderArrayList.get(i).setStackPane(stackPane);
             }
         });
-        mainScene.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
+        mainScene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (Objects.requireNonNull(event.getCode()) == KeyCode.R) {
                 restart();
             }
@@ -206,10 +208,20 @@ public class GameEngine {
             }
         }
         else if (level == 2){
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 15; i++) {
                 Invader invader = new Invader(
                         100 + i * 100,
                         150, 30, 30, "enemy",
+                        mediumInvader, stackPane);
+                invaderArrayList.add(invader);
+                animationPanel.getChildren().add(invader.getSprite());
+            }
+        }
+        else {
+            for (int i = 0; i < 30; i++) {
+                Invader invader = new Invader(
+                        (int) (Math.random()*1800),
+                        (int) (Math.random()*500), 30, 30, "enemy",
                         mediumInvader, stackPane);
                 invaderArrayList.add(invader);
                 animationPanel.getChildren().add(invader.getSprite());
@@ -323,7 +335,7 @@ public class GameEngine {
     private void handlePlayerBullet(Projectile projectile) {
         projectile.moveUp();
         for (int i = 0; i < invaderArrayList.size(); i++) {
-            if (invaderArrayList.get(i).getSprite().getBoundsInParent().intersects(projectile.getSprite().getBoundsInParent())) {
+            if (invaderArrayList.get(i).getSprite().getBoundsInParent().intersects(projectile.getSprite().getBoundsInParent()) && !projectile.isDead() && !invaderArrayList.get(i).isDead()) {
                 projectile.setDead(true);
                 projectile.getSprite().setDead(true);
                 invaderGetsHit(invaderArrayList.get(i));
@@ -363,8 +375,8 @@ public class GameEngine {
         invaderArrayList.remove(invader);
 
         if (invaderArrayList.isEmpty()){
-            if (level == 1) animationPanel.setStyle("-fx-background-image: url(/images/singularity.jpg)");
-            else animationPanel.setStyle("-fx-background-image: url(/images/spaceTime.jpg)");
+            if (level == 1) stackPane.setStyle("-fx-background-image: url(/images/singularity.jpg); -fx-background-size: 1920 1080");
+            else stackPane.setStyle("-fx-background-image: url(/images/spaceTime.jpg); -fx-background-size: 1920 1080");
             level++;
             generateInvaders();
         }
@@ -427,12 +439,12 @@ public class GameEngine {
         if (!shootDelay && !spaceShip.isDead()){
             // The firing entity can be either an enemy or the spaceship.
             if (Objects.equals(firingEntity.getType(), "enemy")) {
-                Projectile bullet = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 5, 20, firingEntity.getType() + "bullet", mediumInvader);
+                Projectile bullet = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 20, 40, firingEntity.getType() + "bullet", invaderBullet);
                 projectileArrayList.add(bullet);
                 animationPanel.getChildren().add(bullet.getSprite());
             }
             else if (Objects.equals(firingEntity.getType(), "player") && shooting){
-                Projectile bullet = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 5, 20, firingEntity.getType() + "bullet", mediumInvader);
+                Projectile bullet = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 20, 40, firingEntity.getType() + "bullet", playerBullet);
                 projectileArrayList.add(bullet);
                 animationPanel.getChildren().add(bullet.getSprite());
                 shootDelay = true;

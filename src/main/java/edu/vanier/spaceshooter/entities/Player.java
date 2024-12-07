@@ -8,7 +8,6 @@ import javafx.scene.layout.StackPane;
 public class Player extends ImageView {
     Sprite sprite;
     private boolean dead = false;
-    private final String type;
     boolean left;
     boolean right;
     boolean up;
@@ -21,7 +20,6 @@ public class Player extends ImageView {
 
 
     public Player(int x, int y, int width, int height, String type) {
-        this.type = type;
         this.sprite = new Sprite(x, y, width, height, type, spaceShipImage);
         this.lives = 3;
         this.score = 0;
@@ -72,6 +70,7 @@ public class Player extends ImageView {
     }
 
     public String getType() {
+        String type = "player";
         return type;
     }
 

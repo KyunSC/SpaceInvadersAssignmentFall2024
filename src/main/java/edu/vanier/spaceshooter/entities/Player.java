@@ -16,10 +16,10 @@ public class Player extends ImageView {
     int score = 0;
     Image spaceShipImage = new Image(String.valueOf(getClass().getResource("/images/ship.png")));
     StackPane stackPane;
-    int speedUp = 1;
+    double speedUp = 1;
 
 
-    public Player(int x, int y, int width, int height, String type) {
+    public Player(double x, double y, double width, double height, String type) {
         this.sprite = new Sprite(x, y, width, height, type, spaceShipImage);
         this.lives = 3;
         this.score = 0;
@@ -90,7 +90,7 @@ public class Player extends ImageView {
         this.stackPane = stackPane;
     }
 
-    public void setSpeedUp(int speedUp) {
+    public void setSpeedUp(double speedUp) {
         this.speedUp = speedUp;
     }
 }

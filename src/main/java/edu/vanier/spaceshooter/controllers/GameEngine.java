@@ -73,7 +73,7 @@ public class GameEngine {
         this.restartButton = restartButton;
         this.primaryStage = primaryStage;
         animationPanel.setPrefSize(600, 800);
-        spaceShip = new Player(300, 750, 40, 40, "player");
+        spaceShip = new Player(stackPane.getWidth()/2, stackPane.getHeight() * 3 / 4, 40, 40, "player");
         animationPanel.getChildren().add(spaceShip.getSprite());
         setUpHud();
         setupGameWorld();
@@ -116,7 +116,7 @@ public class GameEngine {
         stackPane.getChildren().remove(gameOverVBox);
         gameLoop.stop();
         delay.stop();
-        spaceShip = new Player(300, 750, 40, 40, "player");
+        spaceShip = new Player(stackPane.getWidth()/2, stackPane.getHeight() * 3 / 4, 40, 40, "player");
         spaceShip.setStackPane(stackPane);
         animationPanel.getChildren().addAll(spaceShip.getSprite());
         hud.getChildren().remove(restartButton);
@@ -183,7 +183,7 @@ public class GameEngine {
                 case KeyCode.D: spaceShip.setRight(true);break;
                 case KeyCode.W: spaceShip.setUp(true);break;
                 case KeyCode.S: spaceShip.setDown(true);break;
-                case KeyCode.SHIFT: spaceShip.setSpeedUp(2); break;
+                case KeyCode.SHIFT: spaceShip.setSpeedUp(1.5); break;
                 case KeyCode.SPACE: {
                     shooting = true;
                     break;
@@ -386,10 +386,23 @@ public class GameEngine {
         invaderArrayList.remove(invader);
 
         if (invaderArrayList.isEmpty()){
-            if (level == 1) stackPane.setStyle("-fx-background-image: url(/images/singularity.jpg); -fx-background-size: 1920 1080");
-            else stackPane.setStyle("-fx-background-image: url(/images/spaceTime.jpg); -fx-background-size: 1920 1080");
-            level++;
-            generateInvaders();
+            gameOverVBox = new VBox();
+            Label dead = new Label("Next Level");
+            dead.setStyle("-fx-font-size: 40; -fx-text-fill: red");
+            Button nextLevel = new Button("Continue");
+            gameOverVBox.getChildren().addAll(dead, nextLevel);
+            stackPane.getChildren().add(gameOverVBox);
+            gameOverVBox.setStyle("-fx-alignment: center");
+
+            nextLevel.setOnAction(event -> {
+                stackPane.getChildren().remove(gameOverVBox);
+                if (level == 1) stackPane.setStyle("-fx-background-image: url(/images/singularity.jpg); -fx-background-size: 1920 1080");
+                else stackPane.setStyle("-fx-background-image: url(/images/spaceTime.jpg); -fx-background-size: 1920 1080");
+                level++;
+                spaceShip.getSprite().setLayoutY(stackPane.getHeight()*3/4);
+                spaceShip.getSprite().setLayoutX(stackPane.getWidth()/2);
+                generateInvaders();
+            });
         }
     }
 

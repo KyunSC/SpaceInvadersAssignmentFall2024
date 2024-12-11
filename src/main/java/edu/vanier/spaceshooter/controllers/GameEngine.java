@@ -52,6 +52,8 @@ public class GameEngine {
     Image explosion = new Image((Objects.requireNonNull(getClass().getResource("/images/explosionGIF.gif"))).toExternalForm());
     Image invaderBullet = new Image(Objects.requireNonNull(getClass().getResource("/images/invaderBullet.png")).toExternalForm());
     Image playerBullet = new Image(Objects.requireNonNull(getClass().getResource("/images/playerBullet.png")).toExternalForm());
+    Image playerBulletPurple = new Image(Objects.requireNonNull(getClass().getResource("/images/playerBulletPurple.png")).toExternalForm());
+    Image playerBulletGreen = new Image(Objects.requireNonNull(getClass().getResource("/images/playerBulletGreen.png")).toExternalForm());
     AudioClip playerShoot = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/blaster.mp3")).toExternalForm());
     AudioClip explosionSound = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/explosion.mp3")).toExternalForm());
     VBox gameOverVBox;
@@ -225,7 +227,7 @@ public class GameEngine {
         else {
             for (int i = 0; i < 30; i++) {
                 Invader invader = new Invader(
-                        (int) (Math.random()*1800),
+                        (int) (Math.random()*(stackPane.getWidth() - 100)),
                         (int) (Math.random()*500), 30, 30, "enemy",
                         mediumInvader, stackPane);
                 invaderArrayList.add(invader);
@@ -309,7 +311,7 @@ public class GameEngine {
     private void processProjectiles(){
         for (int i = 0; i < projectileArrayList.size(); i++) {
             if (Objects.equals(projectileArrayList.get(i).getType(), "enemybullet")) handleEnemyBullet(projectileArrayList.get(i));
-            else if (Objects.equals(projectileArrayList.get(i).getType(), "playerbullet")) {
+            else if (Objects.equals(projectileArrayList.get(i).getType(), "playerbullet") || Objects.equals(projectileArrayList.get(i).getType(), "playerbulletLeft45") || Objects.equals(projectileArrayList.get(i).getType(), "playerbulletRight45")) {
                 handlePlayerBullet(projectileArrayList.get(i));
             }
         }
@@ -338,7 +340,10 @@ public class GameEngine {
     }
 
     private void handlePlayerBullet(Projectile projectile) {
-        projectile.moveUp();
+        if (Objects.equals(projectile.getType(), "playerbullet")) projectile.moveUp();
+        if (Objects.equals(projectile.getType(), "playerbulletLeft45")) projectile.moveUpLeft45();
+        if (Objects.equals(projectile.getType(), "playerbulletRight45")) projectile.moveUpRight45();
+
         for (int i = 0; i < invaderArrayList.size(); i++) {
             if (invaderArrayList.get(i).getSprite().getBoundsInParent().intersects(projectile.getSprite().getBoundsInParent()) && !projectile.isDead() && !invaderArrayList.get(i).isDead()) {
                 projectile.setDead(true);
@@ -445,10 +450,23 @@ public class GameEngine {
         if (!shootDelay && !spaceShip.isDead()){
             // The firing entity can be either an enemy or the spaceship.
             if (Objects.equals(firingEntity.getType(), "player") && shooting){
+                Image bulletImage = switch (level) {
+                    case 2 -> playerBulletPurple;
+                    case 3 -> playerBulletGreen;
+                    default -> playerBullet;
+                };
                 playerShoot.play();
-                Projectile bullet = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 20, 40, firingEntity.getType() + "bullet", playerBullet);
+                Projectile bullet = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 20, 40, firingEntity.getType() + "bullet", bulletImage);
                 projectileArrayList.add(bullet);
                 animationPanel.getChildren().add(bullet.getSprite());
+                if (level > 1) {
+                    Projectile bullet2 = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 20, 40, firingEntity.getType() + "bulletLeft45", bulletImage);
+                    Projectile bullet3 = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 20, 40, firingEntity.getType() + "bulletRight45", bulletImage);
+                    projectileArrayList.add(bullet2);
+                    projectileArrayList.add(bullet3);
+                    animationPanel.getChildren().addAll(bullet2.getSprite(), bullet3.getSprite());
+                }
+
                 shootDelay = true;
             }
             else if (Objects.equals(firingEntity.getType(), "enemy")) {

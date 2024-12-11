@@ -19,6 +19,18 @@ public class Projectile extends Sprite {
         sprite.setLayoutY(sprite.getLayoutY() - 10);
     }
 
+    public void moveUpLeft45(){
+        sprite.setRotate(135);
+        sprite.setLayoutY(sprite.getLayoutY() - (5 * Math.sqrt(2)) );
+        sprite.setLayoutX(sprite.getLayoutX() - (5 * Math.sqrt(2)) );
+    }
+
+    public void moveUpRight45(){
+        sprite.setRotate(45);
+        sprite.setLayoutY(sprite.getLayoutY() - (5 * Math.sqrt(2)) );
+        sprite.setLayoutX(sprite.getLayoutX() + (5 * Math.sqrt(2)) );
+    }
+
     public void moveDown() {
         sprite.setLayoutY(sprite.getLayoutY() + 10);
     }

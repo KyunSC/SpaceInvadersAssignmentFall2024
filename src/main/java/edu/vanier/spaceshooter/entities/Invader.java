@@ -43,25 +43,25 @@ public class Invader extends Sprite {
 
     public void moveLeft() {
         if (left) {
-            if (sprite.getLayoutX() > 0) sprite.setLayoutX(sprite.getLayoutX() - 5);
+            if (sprite.getLayoutX() > 100) sprite.setLayoutX(sprite.getLayoutX() - 5);
         }
     }
 
     public void moveRight() {
         if (right) {
-            if (sprite.getLayoutY() < stackPane.getWidth())sprite.setLayoutX(sprite.getLayoutX() + 5);
+            if (sprite.getLayoutY() < stackPane.getWidth() - 100) sprite.setLayoutX(sprite.getLayoutX() + 5);
         }
     }
 
     public void moveUp() {
         if (up) {
-            if (sprite.getLayoutY() > 0)sprite.setLayoutY(sprite.getLayoutY() - 5);
+            if (sprite.getLayoutY() > 100) sprite.setLayoutY(sprite.getLayoutY() - 5);
         }
     }
 
     public void moveDown() {
         if (down) {
-            if (sprite.getLayoutY() < stackPane.getHeight())sprite.setLayoutY(sprite.getLayoutY() + 5);
+            if (sprite.getLayoutY() < stackPane.getHeight() - 100) sprite.setLayoutY(sprite.getLayoutY() + 5);
         }
     }
 

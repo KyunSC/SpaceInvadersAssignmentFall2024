@@ -19,10 +19,28 @@ public class Projectile extends Sprite {
         sprite.setLayoutY(sprite.getLayoutY() - 10);
     }
 
+    public void moveUpLeft30(){
+        sprite.setRotate(-30);
+        sprite.setLayoutY(sprite.getLayoutY() - 5);
+        sprite.setLayoutX(sprite.getLayoutX() - (5 * Math.sqrt(3)) );
+    }
+
     public void moveUpLeft45(){
-        sprite.setRotate(135);
+        sprite.setRotate(-45);
         sprite.setLayoutY(sprite.getLayoutY() - (5 * Math.sqrt(2)) );
         sprite.setLayoutX(sprite.getLayoutX() - (5 * Math.sqrt(2)) );
+    }
+
+    public void moveUpLeft60(){
+        sprite.setRotate(-45);
+        sprite.setLayoutY(sprite.getLayoutY() - (5 * Math.sqrt(3)) );
+        sprite.setLayoutX(sprite.getLayoutX() - 5);
+    }
+
+    public void moveUpRight30(){
+        sprite.setRotate(30);
+        sprite.setLayoutY(sprite.getLayoutY() - 5);
+        sprite.setLayoutX(sprite.getLayoutX() + (5 * Math.sqrt(3)) );
     }
 
     public void moveUpRight45(){
@@ -30,6 +48,13 @@ public class Projectile extends Sprite {
         sprite.setLayoutY(sprite.getLayoutY() - (5 * Math.sqrt(2)) );
         sprite.setLayoutX(sprite.getLayoutX() + (5 * Math.sqrt(2)) );
     }
+
+    public void moveUpRight60(){
+        sprite.setRotate(45);
+        sprite.setLayoutY(sprite.getLayoutY() - (5 * Math.sqrt(3)) );
+        sprite.setLayoutX(sprite.getLayoutX() + 5);
+    }
+
 
     public void moveDown() {
         sprite.setLayoutY(sprite.getLayoutY() + 10);

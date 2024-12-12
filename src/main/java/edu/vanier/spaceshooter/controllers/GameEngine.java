@@ -59,6 +59,7 @@ public class GameEngine {
     VBox gameOverVBox;
     VBox hud;
     int level = 1;
+    int firingMode;
 
 
     public GameEngine(Stage primaryStage, Pane animationPanel, VBox HUD, Label levelLabel, Label scoreLabel, Scene mainScene, Label livesLabel, Button restartButton, StackPane stackPane) {
@@ -184,6 +185,7 @@ public class GameEngine {
                 case KeyCode.W: spaceShip.setUp(true);break;
                 case KeyCode.S: spaceShip.setDown(true);break;
                 case KeyCode.SHIFT: spaceShip.setSpeedUp(1.5); break;
+                case KeyCode.E: firingMode = changeFiringMode(); break;
                 case KeyCode.SPACE: {
                     shooting = true;
                     break;
@@ -201,6 +203,13 @@ public class GameEngine {
                 case KeyCode.SPACE: shooting = false;
             }
         });
+    }
+
+    private int changeFiringMode() {
+        if (level > 1) firingMode++;
+        if (level == 2 && firingMode == 3) firingMode = 1;
+        if (level == 3 && firingMode == 4) firingMode = 1;
+        return firingMode;
     }
 
     private void generateInvaders() {
@@ -311,7 +320,7 @@ public class GameEngine {
     private void processProjectiles(){
         for (int i = 0; i < projectileArrayList.size(); i++) {
             if (Objects.equals(projectileArrayList.get(i).getType(), "enemybullet")) handleEnemyBullet(projectileArrayList.get(i));
-            else if (Objects.equals(projectileArrayList.get(i).getType(), "playerbullet") || Objects.equals(projectileArrayList.get(i).getType(), "playerbulletLeft45") || Objects.equals(projectileArrayList.get(i).getType(), "playerbulletRight45")) {
+            else if (Objects.equals(projectileArrayList.get(i).getType().substring(0,12), "playerbullet")) {
                 handlePlayerBullet(projectileArrayList.get(i));
             }
         }
@@ -340,9 +349,15 @@ public class GameEngine {
     }
 
     private void handlePlayerBullet(Projectile projectile) {
-        if (Objects.equals(projectile.getType(), "playerbullet")) projectile.moveUp();
-        if (Objects.equals(projectile.getType(), "playerbulletLeft45")) projectile.moveUpLeft45();
-        if (Objects.equals(projectile.getType(), "playerbulletRight45")) projectile.moveUpRight45();
+        switch (projectile.getType()){
+            case "playerbullet": projectile.moveUp(); break;
+            case "playerbulletLeft30": projectile.moveUpLeft30(); break;
+            case "playerbulletLeft45": projectile.moveUpLeft45(); break;
+            case "playerbulletLeft60": projectile.moveUpLeft60(); break;
+            case "playerbulletRight30": projectile.moveUpRight30(); break;
+            case "playerbulletRight45": projectile.moveUpRight45(); break;
+            case "playerbulletRight60": projectile.moveUpRight60(); break;
+        }
 
         for (int i = 0; i < invaderArrayList.size(); i++) {
             if (invaderArrayList.get(i).getSprite().getBoundsInParent().intersects(projectile.getSprite().getBoundsInParent()) && !projectile.isDead() && !invaderArrayList.get(i).isDead()) {
@@ -396,9 +411,16 @@ public class GameEngine {
 
             nextLevel.setOnAction(event -> {
                 stackPane.getChildren().remove(gameOverVBox);
-                if (level == 1) stackPane.setStyle("-fx-background-image: url(/images/singularity.jpg); -fx-background-size: 1920 1080");
-                else stackPane.setStyle("-fx-background-image: url(/images/spaceTime.jpg); -fx-background-size: 1920 1080");
+                if (level == 1) {
+                    stackPane.setStyle("-fx-background-image: url(/images/singularity.jpg); -fx-background-size: 1920 1080");
+                    firingMode = 2;
+                }
+                else {
+                    stackPane.setStyle("-fx-background-image: url(/images/spaceTime.jpg); -fx-background-size: 1920 1080");
+                    firingMode = 3;
+                }
                 level++;
+                levelLabel.setText("Level " + level);
                 spaceShip.getSprite().setLayoutY(stackPane.getHeight()*3/4);
                 spaceShip.getSprite().setLayoutX(stackPane.getWidth()/2);
                 generateInvaders();
@@ -463,7 +485,7 @@ public class GameEngine {
         if (!shootDelay && !spaceShip.isDead()){
             // The firing entity can be either an enemy or the spaceship.
             if (Objects.equals(firingEntity.getType(), "player") && shooting){
-                Image bulletImage = switch (level) {
+                Image bulletImage = switch (firingMode) {
                     case 2 -> playerBulletPurple;
                     case 3 -> playerBulletGreen;
                     default -> playerBullet;
@@ -472,14 +494,24 @@ public class GameEngine {
                 Projectile bullet = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 20, 40, firingEntity.getType() + "bullet", bulletImage);
                 projectileArrayList.add(bullet);
                 animationPanel.getChildren().add(bullet.getSprite());
-                if (level > 1) {
+                if (firingMode == 2) {
                     Projectile bullet2 = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 20, 40, firingEntity.getType() + "bulletLeft45", bulletImage);
                     Projectile bullet3 = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 20, 40, firingEntity.getType() + "bulletRight45", bulletImage);
                     projectileArrayList.add(bullet2);
                     projectileArrayList.add(bullet3);
                     animationPanel.getChildren().addAll(bullet2.getSprite(), bullet3.getSprite());
                 }
-
+                else if (firingMode == 3) {
+                    Projectile bullet2 = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 20, 40, firingEntity.getType() + "bulletLeft30", bulletImage);
+                    Projectile bullet3 = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 20, 40, firingEntity.getType() + "bulletRight30", bulletImage);
+                    Projectile bullet4 = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 20, 40, firingEntity.getType() + "bulletLeft60", bulletImage);
+                    Projectile bullet5 = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 20, 40, firingEntity.getType() + "bulletRight60", bulletImage);
+                    projectileArrayList.add(bullet2);
+                    projectileArrayList.add(bullet3);
+                    projectileArrayList.add(bullet4);
+                    projectileArrayList.add(bullet5);
+                    animationPanel.getChildren().addAll(bullet2.getSprite(), bullet3.getSprite(), bullet4.getSprite(), bullet5.getSprite());
+                }
                 shootDelay = true;
             }
             else if (Objects.equals(firingEntity.getType(), "enemy")) {

@@ -77,6 +77,7 @@ public class GameEngine {
         spaceShip = new Player(stackPane.getWidth()/2, stackPane.getHeight() * 3 / 4, 40, 40, "player");
         animationPanel.getChildren().add(spaceShip.getSprite());
         setUpHud();
+
         setupGameWorld();
     }
 
@@ -92,7 +93,7 @@ public class GameEngine {
         scoreLabel.setText("Score: " + spaceShip.getScore());
         livesLabel.setText("Lives: " + spaceShip.getLives());
         spaceShip.setStackPane(stackPane);
-        stackPane.widthProperty().addListener((observable, oldValue, newValue) -> {
+        stackPane.widthProperty().addListener((_, _, _) -> {
             spaceShip.setStackPane(stackPane);
             for (int i = 0; i < invaderArrayList.size(); i++) {
                 invaderArrayList.get(i).setStackPane(stackPane);
@@ -208,7 +209,7 @@ public class GameEngine {
     private int changeFiringMode() {
         if (level > 1) firingMode++;
         if (level == 2 && firingMode == 3) firingMode = 1;
-        if (level == 3 && firingMode == 4) firingMode = 1;
+        if (level > 2 && firingMode == 4) firingMode = 1;
         return firingMode;
     }
 
@@ -278,21 +279,19 @@ public class GameEngine {
     private void update() {
         elapsedTime += 0.016;
         // Actions to be performed during each frame of the animation.
-        /*invaderArrayList.forEach(this::handleEnemyFiring);*/
         for (int i = 0; i < invaderArrayList.size(); i++) {
             handleEnemyFiring(invaderArrayList.get(i));
+            invaderArrayList.get(i).setMoving(true);
+            invaderArrayList.get(i).moveUp();
+            invaderArrayList.get(i).moveDown();
+            invaderArrayList.get(i).moveLeft();
+            invaderArrayList.get(i).moveRight();
         }
+
         processProjectiles();
         removeDeadSprites();
         spaceShipCollisions();
 
-            for (int i = 0; i < invaderArrayList.size(); i++) {
-                invaderArrayList.get(i).setMoving(true);
-                invaderArrayList.get(i).moveUp();
-                invaderArrayList.get(i).moveDown();
-                invaderArrayList.get(i).moveLeft();
-                invaderArrayList.get(i).moveRight();
-            }
         if (elapsedTime == 0.016){
             for (int i = 0; i < invaderArrayList.size(); i++) {
                 invaderArrayList.get(i).setMoving(true);
@@ -410,7 +409,10 @@ public class GameEngine {
             gameOverVBox.setStyle("-fx-alignment: center");
 
             nextLevel.setOnAction(event -> {
+                for (Projectile projectile : projectileArrayList) animationPanel.getChildren().remove(projectile.getSprite());
+                projectileArrayList.clear();
                 stackPane.getChildren().remove(gameOverVBox);
+
                 if (level == 1) {
                     stackPane.setStyle("-fx-background-image: url(/images/singularity.jpg); -fx-background-size: 1920 1080");
                     firingMode = 2;

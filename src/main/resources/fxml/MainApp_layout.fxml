@@ -3,6 +3,7 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <StackPane fx:id="stackPane" prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-image: url(&quot;images/stars.png&quot;); -fx-background-size: 1920 1080;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
    <Pane fx:id="animationPanel" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" />
@@ -30,5 +31,24 @@
       <opaqueInsets>
          <Insets />
       </opaqueInsets>
+   </VBox>
+   <VBox fx:id="introBox" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: black;">
+      <children>
+         <Label text="Welcome To Space Invaders!" textFill="WHITE">
+            <font>
+               <Font size="50.0" />
+            </font>
+            <VBox.margin>
+               <Insets bottom="500.0" />
+            </VBox.margin>
+         </Label>
+         <Label text="Keybinds: " textFill="WHITE" />
+         <Label text="WASD: Move Around" textFill="WHITE" />
+         <Label text="Space: Shoot" textFill="WHITE" />
+         <Label text="Shift (HOLD): Move Faster Using WASD " textFill="WHITE" />
+         <Label text="E: Change Firing Mode After Unlocking New Ones" textFill="WHITE" />
+         <Label text="F: Set Full Screen" textFill="WHITE" />
+         <Button fx:id="start" mnemonicParsing="false" text="Start" />
+      </children>
    </VBox>
 </StackPane>

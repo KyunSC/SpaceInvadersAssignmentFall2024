@@ -14,7 +14,7 @@ public class Player extends ImageView {
     boolean down;
     int lives;
     int score = 0;
-    Image spaceShipImage = new Image(String.valueOf(getClass().getResource("/images/ship.png")));
+    Image spaceShipImage = new Image(String.valueOf(getClass().getResource("/images/ship1.png")));
     StackPane stackPane;
     double speedUp = 1;
 

@@ -18,6 +18,7 @@ public class Sprite extends ImageView {
         setImage(image);
         setFitWidth(width);
         setFitHeight(height);
+        setPreserveRatio(true);
         this.type = type;
         setLayoutX(x);
         setLayoutY(y);

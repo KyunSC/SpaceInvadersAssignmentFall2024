@@ -11,10 +11,11 @@ public class Boss extends Sprite {
     private boolean dead = false;
     private final String type;
     private Color color;
-    private int x;
-    private int y;
-    private int width;
-    private int height;
+    private double x;
+    private double y;
+    private double width;
+    private double height;
+    private int lives = 100;
     private Sprite sprite;
     private StackPane stackPane;
     private boolean moving = false;
@@ -24,7 +25,7 @@ public class Boss extends Sprite {
     private boolean down = false;
 
 
-    public Boss(int x, int y, int width, int height, String type, Image image, StackPane stackPane) {
+    public Boss(double x, double y, double width, double height, String type, Image image, StackPane stackPane) {
         super(x, y, width, height, type, image);
         this.stackPane = stackPane;
         this.type = type;
@@ -106,5 +107,12 @@ public class Boss extends Sprite {
         this.down = false;
         this.left = false;
         this.right = false;
+    }
+    public int getLives(){
+        return lives;
+    }
+
+    public void setLives(int lives) {
+        this.lives = lives;
     }
 }

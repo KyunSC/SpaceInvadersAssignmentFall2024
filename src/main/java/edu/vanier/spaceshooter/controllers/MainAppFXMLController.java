@@ -53,20 +53,15 @@ public class MainAppFXMLController {
     private Button restartButton;
     @FXML
     private VBox HUD;
-
-    VBox introBox;
-    Button start;
-    Label welcomeMessage;
+    @FXML
+    private VBox introBox;
+    @FXML
+    private Button start;
 
 
     @FXML
     public void initialize() {
-        introBox = new VBox();
-        welcomeMessage = new Label("Welcome to Space Invaders!");
-        start = new Button("Start");
-        introBox.getChildren().addAll(welcomeMessage, start);
-        introBox.setAlignment(Pos.CENTER);
-        stackPane.getChildren().add(introBox);
+        introBox.setStyle("-fx-background-color: black");
         start.setOnAction(event -> setupGameWorld());
     }
 

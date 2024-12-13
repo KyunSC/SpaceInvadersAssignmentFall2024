@@ -1,5 +1,6 @@
 package edu.vanier.spaceshooter.controllers;
 
+import edu.vanier.spaceshooter.entities.Boss;
 import edu.vanier.spaceshooter.entities.Invader;
 import edu.vanier.spaceshooter.entities.Player;
 import edu.vanier.spaceshooter.entities.Projectile;
@@ -42,13 +43,17 @@ public class GameEngine {
     private ArrayList<Projectile> projectileArrayList = new ArrayList<>();
     private ArrayList<Invader> invaderArrayList = new ArrayList<>();
     private ArrayList<Sprite> explosionArrayList = new ArrayList<>();
+    private Boss boss;
     Pane animationPanel;
     StackPane stackPane;
     Label levelLabel;
     Label scoreLabel;
     Label livesLabel;
     Button restartButton;
-    Image mediumInvader = new Image((Objects.requireNonNull(getClass().getResource("/images/enemy-medium.png"))).toExternalForm());
+    Image spaceship2 = new Image((Objects.requireNonNull(getClass().getResource("/images/ship2.png")).toExternalForm()));
+    Image spaceship3 = new Image((Objects.requireNonNull(getClass().getResource("/images/ship3.png")).toExternalForm()));
+    Image invaderImage = new Image((Objects.requireNonNull(getClass().getResource("/images/invader.png"))).toExternalForm());
+    Image bossImage = new Image((Objects.requireNonNull(getClass().getResource("/images/boss.png"))).toExternalForm());
     Image explosion = new Image((Objects.requireNonNull(getClass().getResource("/images/explosionGIF.gif"))).toExternalForm());
     Image invaderBullet = new Image(Objects.requireNonNull(getClass().getResource("/images/invaderBullet.png")).toExternalForm());
     Image playerBullet = new Image(Objects.requireNonNull(getClass().getResource("/images/playerBullet.png")).toExternalForm());
@@ -187,6 +192,12 @@ public class GameEngine {
                 case KeyCode.S: spaceShip.setDown(true);break;
                 case KeyCode.SHIFT: spaceShip.setSpeedUp(1.5); break;
                 case KeyCode.E: firingMode = changeFiringMode(); break;
+                case KeyCode.F:
+                    for (int i = 0; i < invaderArrayList.size(); i++) {
+                        invaderArrayList.get(i).setStackPane(stackPane);
+                        spaceShip.setStackPane(stackPane);
+                    }
+                    break;
                 case KeyCode.SPACE: {
                     shooting = true;
                     break;
@@ -215,21 +226,21 @@ public class GameEngine {
 
     private void generateInvaders() {
         if (level ==1) {
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 15; i++) {
                 Invader invader = new Invader(
-                        100 + i * 300,
+                        100 + i * 100,
                         150, 30, 30, "enemy",
-                        mediumInvader, stackPane);
+                        invaderImage, stackPane);
                 invaderArrayList.add(invader);
                 animationPanel.getChildren().add(invader.getSprite());
             }
         }
         else if (level == 2){
-            for (int i = 0; i < 15; i++) {
+            for (int i = 0; i < 20; i++) {
                 Invader invader = new Invader(
-                        100 + i * 100,
+                        100 + i * 80,
                         150, 30, 30, "enemy",
-                        mediumInvader, stackPane);
+                        invaderImage, stackPane);
                 invaderArrayList.add(invader);
                 animationPanel.getChildren().add(invader.getSprite());
             }
@@ -239,10 +250,12 @@ public class GameEngine {
                 Invader invader = new Invader(
                         (int) (Math.random()*(stackPane.getWidth() - 100)),
                         (int) (Math.random()*500), 30, 30, "enemy",
-                        mediumInvader, stackPane);
+                        invaderImage, stackPane);
                 invaderArrayList.add(invader);
                 animationPanel.getChildren().add(invader.getSprite());
             }
+            boss = new Boss(stackPane.getWidth()/2 - 100, stackPane.getHeight()/2 - 100, 100, 100, "boss", bossImage, stackPane);
+            animationPanel.getChildren().add(boss.getSprite());
         }
     }
 
@@ -365,6 +378,25 @@ public class GameEngine {
                 invaderGetsHit(invaderArrayList.get(i));
             }
         }
+        if (boss != null && !boss.isDead() && !projectile.isDead()) {
+            if (projectile.getSprite().getBoundsInParent().intersects(boss.getSprite().getBoundsInParent())) {
+                projectile.setDead(true);
+                projectile.getSprite().setDead(true);
+                bossGetsHit();
+            }
+        }
+    }
+
+    private void bossGetsHit() {
+        boss.setLives(boss.getLives() - 1);
+        if (boss.getLives() == 0 && invaderArrayList.isEmpty()){
+            animationPanel.getChildren().remove(boss.getSprite());
+            boss.setDead(true);
+            nextLevel();
+        } else if (boss.getLives() == 0) {
+            animationPanel.getChildren().remove(boss.getSprite());
+            boss.setDead(true);
+        }
     }
 
     private void handleEnemyFiring(Invader invader) {
@@ -400,34 +432,41 @@ public class GameEngine {
         invaderArrayList.remove(invader);
 
         if (invaderArrayList.isEmpty()){
-            gameOverVBox = new VBox();
-            Label dead = new Label("Next Level");
-            dead.setStyle("-fx-font-size: 40; -fx-text-fill: red");
-            Button nextLevel = new Button("Continue");
-            gameOverVBox.getChildren().addAll(dead, nextLevel);
-            stackPane.getChildren().add(gameOverVBox);
-            gameOverVBox.setStyle("-fx-alignment: center");
-
-            nextLevel.setOnAction(event -> {
-                for (Projectile projectile : projectileArrayList) animationPanel.getChildren().remove(projectile.getSprite());
-                projectileArrayList.clear();
-                stackPane.getChildren().remove(gameOverVBox);
-
-                if (level == 1) {
-                    stackPane.setStyle("-fx-background-image: url(/images/singularity.jpg); -fx-background-size: 1920 1080");
-                    firingMode = 2;
-                }
-                else {
-                    stackPane.setStyle("-fx-background-image: url(/images/spaceTime.jpg); -fx-background-size: 1920 1080");
-                    firingMode = 3;
-                }
-                level++;
-                levelLabel.setText("Level " + level);
-                spaceShip.getSprite().setLayoutY(stackPane.getHeight()*3/4);
-                spaceShip.getSprite().setLayoutX(stackPane.getWidth()/2);
-                generateInvaders();
-            });
+            if (boss != null && boss.isDead()) nextLevel();
+            else if (boss == null) nextLevel();
         }
+    }
+
+    private void nextLevel(){
+        gameOverVBox = new VBox();
+        Label dead = new Label("Next Level");
+        dead.setStyle("-fx-font-size: 40; -fx-text-fill: red");
+        Button nextLevel = new Button("Continue");
+        gameOverVBox.getChildren().addAll(dead, nextLevel);
+        stackPane.getChildren().add(gameOverVBox);
+        gameOverVBox.setStyle("-fx-alignment: center");
+
+        nextLevel.setOnAction(event -> {
+            for (Projectile projectile : projectileArrayList) animationPanel.getChildren().remove(projectile.getSprite());
+            projectileArrayList.clear();
+            stackPane.getChildren().remove(gameOverVBox);
+
+            if (level == 1) {
+                stackPane.setStyle("-fx-background-image: url(/images/singularity.jpg); -fx-background-size: 1920 1080");
+                firingMode = 2;
+                spaceShip.setImage(spaceship2);
+            }
+            else {
+                stackPane.setStyle("-fx-background-image: url(/images/spaceTime.jpg); -fx-background-size: 1920 1080");
+                firingMode = 3;
+                spaceShip.setImage(spaceship3);
+            }
+            level++;
+            levelLabel.setText("Level " + level);
+            spaceShip.getSprite().setLayoutY(stackPane.getHeight()*3/4);
+            spaceShip.getSprite().setLayoutX(stackPane.getWidth()/2);
+            generateInvaders();
+        });
     }
 
     private void handleExplosion(Sprite target){

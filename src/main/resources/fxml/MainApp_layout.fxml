@@ -39,7 +39,7 @@
                <Font size="50.0" />
             </font>
             <VBox.margin>
-               <Insets bottom="500.0" />
+               <Insets bottom="300.0" />
             </VBox.margin>
          </Label>
          <Label text="Keybinds: " textFill="WHITE" />
@@ -48,7 +48,10 @@
          <Label text="Shift (HOLD): Move Faster Using WASD " textFill="WHITE" />
          <Label text="E: Change Firing Mode After Unlocking New Ones" textFill="WHITE" />
          <Label text="F: Set Full Screen" textFill="WHITE" />
-         <Button fx:id="start" mnemonicParsing="false" text="Start" />
+         <Button fx:id="start" mnemonicParsing="false" prefHeight="26.0" prefWidth="266.0" style="-fx-background-color: lightgreen;" text="Start">
+            <VBox.margin>
+               <Insets top="200.0" />
+            </VBox.margin></Button>
       </children>
    </VBox>
 </StackPane>

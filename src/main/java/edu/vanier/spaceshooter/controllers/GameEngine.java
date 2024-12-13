@@ -13,6 +13,7 @@ import java.util.Objects;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -62,6 +63,7 @@ public class GameEngine {
     AudioClip playerShoot = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/blaster.mp3")).toExternalForm());
     AudioClip explosionSound = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/explosion.mp3")).toExternalForm());
     VBox gameOverVBox;
+    VBox winBox;
     VBox hud;
     int level = 1;
     int firingMode;
@@ -438,35 +440,58 @@ public class GameEngine {
     }
 
     private void nextLevel(){
-        gameOverVBox = new VBox();
-        Label dead = new Label("Next Level");
-        dead.setStyle("-fx-font-size: 40; -fx-text-fill: red");
-        Button nextLevel = new Button("Continue");
-        gameOverVBox.getChildren().addAll(dead, nextLevel);
-        stackPane.getChildren().add(gameOverVBox);
-        gameOverVBox.setStyle("-fx-alignment: center");
+        if (level < 3) {
+            gameOverVBox = new VBox();
+            Label dead = new Label("Next Level");
+            dead.setStyle("-fx-font-size: 40; -fx-text-fill: red");
+            Button nextLevel = new Button("Continue");
+            gameOverVBox.getChildren().addAll(dead, nextLevel);
+            stackPane.getChildren().add(gameOverVBox);
+            gameOverVBox.setStyle("-fx-alignment: center");
 
-        nextLevel.setOnAction(event -> {
-            for (Projectile projectile : projectileArrayList) animationPanel.getChildren().remove(projectile.getSprite());
-            projectileArrayList.clear();
-            stackPane.getChildren().remove(gameOverVBox);
+            nextLevel.setOnAction(event -> {
+                for (Projectile projectile : projectileArrayList)
+                    animationPanel.getChildren().remove(projectile.getSprite());
+                projectileArrayList.clear();
+                stackPane.getChildren().remove(gameOverVBox);
 
-            if (level == 1) {
-                stackPane.setStyle("-fx-background-image: url(/images/singularity.jpg); -fx-background-size: 1920 1080");
-                firingMode = 2;
-                spaceShip.getSprite().setImage(spaceship2);
-            }
-            else {
-                stackPane.setStyle("-fx-background-image: url(/images/spaceTime.jpg); -fx-background-size: 1920 1080");
-                firingMode = 3;
-                spaceShip.getSprite().setImage(spaceship3);
-            }
-            level++;
-            levelLabel.setText("Level " + level);
-            spaceShip.getSprite().setLayoutY(stackPane.getHeight()*3/4);
-            spaceShip.getSprite().setLayoutX(stackPane.getWidth()/2);
-            generateInvaders();
-        });
+                if (level == 1) {
+                    stackPane.setStyle("-fx-background-image: url(/images/singularity.jpg); -fx-background-size: 1920 1080");
+                    firingMode = 2;
+                    spaceShip.getSprite().setImage(spaceship2);
+                } else {
+                    stackPane.setStyle("-fx-background-image: url(/images/spaceTime.jpg); -fx-background-size: 1920 1080");
+                    firingMode = 3;
+                    spaceShip.getSprite().setImage(spaceship3);
+                }
+                level++;
+                levelLabel.setText("Level " + level);
+                spaceShip.getSprite().setLayoutY(stackPane.getHeight() * 3 / 4);
+                spaceShip.getSprite().setLayoutX(stackPane.getWidth() / 2);
+                generateInvaders();
+            });
+        }
+        else {
+            winBox = new VBox();
+            winBox.setStyle("-fx-background-color: black");
+            winBox.setAlignment(Pos.CENTER);
+            Label winLabel = new Label("Congratulations, you have defeated the invaders!");
+            winLabel.setStyle("-fx-text-fill: white");
+            Button back = new Button("Back to Level 1");
+            back.setOnAction(event -> backToLevel1());
+            Button exit = new Button("Exit");
+            exit.setOnAction(event -> primaryStage.hide());
+            winBox.getChildren().addAll(winLabel, exit, back);
+            stackPane.getChildren().add(winBox);
+        }
+    }
+
+    private void backToLevel1() {
+        stackPane.getChildren().remove(winBox);
+        level = 1;
+        spaceShip.getSprite().setLayoutX(stackPane.getWidth()/2);
+        spaceShip.getSprite().setLayoutY(stackPane.getHeight()*3/4);
+        generateInvaders();
     }
 
     private void handleExplosion(Sprite target){

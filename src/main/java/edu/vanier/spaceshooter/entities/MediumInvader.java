@@ -22,6 +22,7 @@ public class MediumInvader extends Sprite {
     private boolean right= false;
     private boolean up = false;
     private boolean down = false;
+    private int lives = 3;
 
 
     public MediumInvader(int x, int y, int width, int height, String type, Image image, StackPane stackPane) {
@@ -106,5 +107,12 @@ public class MediumInvader extends Sprite {
         this.down = false;
         this.left = false;
         this.right = false;
+    }
+    public int getLives(){
+        return lives;
+    }
+
+    public void setLives(int lives) {
+        this.lives = lives;
     }
 }

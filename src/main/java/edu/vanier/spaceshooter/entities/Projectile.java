@@ -20,7 +20,7 @@ public class Projectile extends Sprite {
     }
 
     public void moveUpLeft30(){
-        sprite.setRotate(-30);
+        sprite.setRotate(-45);
         sprite.setLayoutY(sprite.getLayoutY() - 5);
         sprite.setLayoutX(sprite.getLayoutX() - (5 * Math.sqrt(3)) );
     }
@@ -38,7 +38,7 @@ public class Projectile extends Sprite {
     }
 
     public void moveUpRight30(){
-        sprite.setRotate(30);
+        sprite.setRotate(45);
         sprite.setLayoutY(sprite.getLayoutY() - 5);
         sprite.setLayoutX(sprite.getLayoutX() + (5 * Math.sqrt(3)) );
     }

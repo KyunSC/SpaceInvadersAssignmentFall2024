@@ -66,6 +66,8 @@ public class GameEngine {
     Image playerBulletPurple = new Image(Objects.requireNonNull(getClass().getResource("/images/playerBulletPurple.png")).toExternalForm());
     Image playerBulletGreen = new Image(Objects.requireNonNull(getClass().getResource("/images/playerBulletGreen.png")).toExternalForm());
     AudioClip playerShoot = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/blaster.mp3")).toExternalForm());
+    AudioClip blasterSound2 = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/blaster2.mp3")).toExternalForm());
+    AudioClip blasterSound3 = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/shoot.wav")).toExternalForm());
     AudioClip explosionSound = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/explosion.mp3")).toExternalForm());
     AudioClip backgroundMusic = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/backgroundMusic.mp3")).toExternalForm());
     VBox gameOverVBox;
@@ -131,6 +133,8 @@ public class GameEngine {
     private void restart(){
         gameState = "playing";
         invaderArrayList.clear();
+        mediumInvaderArrayList.clear();
+        largeInvaderArraylist.clear();
         projectileArrayList.clear();
         animationPanel.getChildren().clear();
         stackPane.getChildren().remove(gameOverVBox);
@@ -491,12 +495,15 @@ public class GameEngine {
 
     private void bossGetsHit() {
         boss.setLives(boss.getLives() - 1);
+        updateScorePlus1();
         if (boss.getLives() == 0 && invaderArrayList.isEmpty()){
             animationPanel.getChildren().remove(boss.getSprite());
             boss.setDead(true);
+            handleExplosion(boss.getSprite());
             nextLevel();
         } else if (boss.getLives() == 0) {
             animationPanel.getChildren().remove(boss.getSprite());
+            handleExplosion(boss.getSprite());
             boss.setDead(true);
         }
     }
@@ -599,13 +606,13 @@ public class GameEngine {
             Label dead = new Label("Next Level");
             dead.setStyle("-fx-font-size: 40; -fx-text-fill: red");
             Button nextLevel = new Button("Continue");
+            nextLevel.setFocusTraversable(false);
             gameOverVBox.getChildren().addAll(dead, nextLevel);
             stackPane.getChildren().add(gameOverVBox);
             gameOverVBox.setStyle("-fx-alignment: center");
 
             nextLevel.setOnAction(event -> {
-                for (Projectile projectile : projectileArrayList)
-                    animationPanel.getChildren().remove(projectile.getSprite());
+                for (Projectile projectile : projectileArrayList) animationPanel.getChildren().remove(projectile.getSprite());
                 projectileArrayList.clear();
                 stackPane.getChildren().remove(gameOverVBox);
 
@@ -636,8 +643,10 @@ public class GameEngine {
             Label finalScore = new Label("Final Score: " + spaceShip.getScore());
             finalScore.setStyle("-fx-text-fill: white");
             Button back = new Button("Back to Level 1");
+            back.setFocusTraversable(false);
             back.setOnAction(event -> backToLevel1());
             Button exit = new Button("Exit");
+            exit.setFocusTraversable(false);
             exit.setOnAction(event -> primaryStage.hide());
             winBox.getChildren().addAll(winLabel, finalScore, back, exit);
             stackPane.getChildren().add(winBox);
@@ -652,6 +661,8 @@ public class GameEngine {
         firingMode = 1;
         spaceShip.setScore(0);
         previousScore = 0;
+        hud.getChildren().remove(restartButton);
+        hud.getChildren().add(restartButton);
         scoreLabel.setText("Score: " + spaceShip.getScore());
         livesLabel.setText("Lives: " + spaceShip.getLives());
         levelLabel.setText("Level: " + level);
@@ -688,6 +699,7 @@ public class GameEngine {
         gameOverVBox.getChildren().addAll(dead, deadScore, restartOver);
         if (level > 1){
             Button returnToLevel1 = getLevel1Button();
+            returnToLevel1.setFocusTraversable(false);
             gameOverVBox.getChildren().add(returnToLevel1);
         }
         stackPane.getChildren().add(gameOverVBox);
@@ -742,13 +754,22 @@ public class GameEngine {
     private void shoot(Sprite firingEntity) {
         if (!shootDelay && !spaceShip.isDead()){
             // The firing entity can be either an enemy or the spaceship.
-            if (Objects.equals(firingEntity.getType(), "player") && shooting){
-                Image bulletImage = switch (firingMode) {
-                    case 2 -> playerBulletPurple;
-                    case 3 -> playerBulletGreen;
-                    default -> playerBullet;
-                };
-                playerShoot.play();
+            if (Objects.equals(firingEntity.getType(), "player") && shooting && !Objects.equals(gameState, "paused")){
+                Image bulletImage;
+                switch (firingMode){
+                    case 2 -> {
+                        blasterSound2.play();
+                        bulletImage = playerBulletPurple;
+                    }
+                    case 3 -> {
+                        blasterSound3.play();
+                        bulletImage = playerBulletGreen;
+                    }
+                    default-> {
+                        playerShoot.play();
+                        bulletImage = playerBullet;
+                    }
+                }
                 Projectile bullet = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 20, 40, firingEntity.getType() + "bullet", bulletImage);
                 projectileArrayList.add(bullet);
                 animationPanel.getChildren().add(bullet.getSprite());

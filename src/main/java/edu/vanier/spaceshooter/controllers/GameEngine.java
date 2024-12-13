@@ -481,7 +481,7 @@ public class GameEngine {
             back.setOnAction(event -> backToLevel1());
             Button exit = new Button("Exit");
             exit.setOnAction(event -> primaryStage.hide());
-            winBox.getChildren().addAll(winLabel, exit, back);
+            winBox.getChildren().addAll(winLabel, back, exit);
             stackPane.getChildren().add(winBox);
         }
     }
@@ -489,6 +489,10 @@ public class GameEngine {
     private void backToLevel1() {
         stackPane.getChildren().remove(winBox);
         level = 1;
+        spaceShip.setScore(0);
+        scoreLabel.setText("Score: " + spaceShip.getScore());
+        levelLabel.setText("Level: " + level);
+        stackPane.setStyle("-fx-background-image: url(/images/stars.png); -fx-background-size: 1920 1080");
         spaceShip.getSprite().setLayoutX(stackPane.getWidth()/2);
         spaceShip.getSprite().setLayoutY(stackPane.getHeight()*3/4);
         generateInvaders();

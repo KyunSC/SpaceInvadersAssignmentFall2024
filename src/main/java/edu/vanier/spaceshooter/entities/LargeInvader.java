@@ -7,7 +7,7 @@ import javafx.scene.paint.Color;
 
 import java.util.Stack;
 
-public class MediumInvader extends Sprite {
+public class LargeInvader extends Sprite {
     private boolean dead = false;
     private final String type;
     private Color color;
@@ -22,10 +22,10 @@ public class MediumInvader extends Sprite {
     private boolean right= false;
     private boolean up = false;
     private boolean down = false;
-    private int lives = 2;
+    private int lives = 3;
 
 
-    public MediumInvader(double x, double y, double width, double height, String type, Image image, StackPane stackPane) {
+    public LargeInvader(double x, double y, double width, double height, String type, Image image, StackPane stackPane) {
         super(x, y, width, height, type, image);
         this.stackPane = stackPane;
         this.type = type;
@@ -34,16 +34,27 @@ public class MediumInvader extends Sprite {
         this.sprite = new Sprite(x, y, width, height, type, image);
     }
 
+    public void moveLeft() {
+        if (left) {
+            if (sprite.getLayoutX() > 100) sprite.setLayoutX(sprite.getLayoutX() - 5);
+        }
+    }
+
+    public void moveRight() {
+        if (right) {
+            if (sprite.getLayoutY() < stackPane.getWidth() - 100) sprite.setLayoutX(sprite.getLayoutX() + 5);
+        }
+    }
+
     public void moveUp() {
         if (up) {
-            if (sprite.getLayoutY() > 100) sprite.setLayoutY(sprite.getLayoutY() - (Math.random()*5 + 10));
+            if (sprite.getLayoutY() > 100) sprite.setLayoutY(sprite.getLayoutY() - 5);
         }
     }
 
     public void moveDown() {
         if (down) {
-            if (sprite.getLayoutY() < stackPane.getHeight() - 200) sprite.setLayoutY(sprite.getLayoutY() + (Math.random()*20 + 10));
-            else moveUp();
+            if (sprite.getLayoutY() < stackPane.getHeight() - 100) sprite.setLayoutY(sprite.getLayoutY() + 5);
         }
     }
 

@@ -11,10 +11,10 @@ public class Invader extends Sprite {
     private boolean dead = false;
     private final String type;
     private Color color;
-    private int x;
-    private int y;
-    private int width;
-    private int height;
+    private double x;
+    private double y;
+    private double width;
+    private double height;
     private Sprite sprite;
     private StackPane stackPane;
     private boolean moving = false;
@@ -24,21 +24,13 @@ public class Invader extends Sprite {
     private boolean down = false;
 
 
-    public Invader(int x, int y, int width, int height, String type, Image image, StackPane stackPane) {
+    public Invader(double x, double y, double width, double height, String type, Image image, StackPane stackPane) {
         super(x, y, width, height, type, image);
         this.stackPane = stackPane;
         this.type = type;
         setFitWidth(width);
         setFitHeight(height);
         this.sprite = new Sprite(x, y, width, height, type, image);
-    }
-
-    public void movementPattern(){
-        double random = Math.ceil(Math.random()*4);
-        if (random == 1) moveUp();
-        else if (random == 2) moveDown();
-        else if (random == 3) moveLeft();
-        else if (random == 4) moveRight();
     }
 
     public void moveLeft() {
@@ -49,7 +41,7 @@ public class Invader extends Sprite {
 
     public void moveRight() {
         if (right) {
-            if (sprite.getLayoutY() < stackPane.getWidth() - 100) sprite.setLayoutX(sprite.getLayoutX() + 5);
+            if (sprite.getLayoutY() < stackPane.getWidth() - 100 || sprite.getLayoutY() < 1700) sprite.setLayoutX(sprite.getLayoutX() + 5);
         }
     }
 
@@ -61,7 +53,7 @@ public class Invader extends Sprite {
 
     public void moveDown() {
         if (down) {
-            if (sprite.getLayoutY() < stackPane.getHeight() - 100) sprite.setLayoutY(sprite.getLayoutY() + 5);
+            if (sprite.getLayoutY() < stackPane.getHeight() - 100 || sprite.getLayoutY() < 900) sprite.setLayoutY(sprite.getLayoutY() + 5);
         }
     }
 

@@ -1,15 +1,13 @@
 package edu.vanier.spaceshooter.controllers;
 
-import edu.vanier.spaceshooter.entities.Boss;
-import edu.vanier.spaceshooter.entities.Invader;
-import edu.vanier.spaceshooter.entities.Player;
-import edu.vanier.spaceshooter.entities.Projectile;
+import edu.vanier.spaceshooter.entities.*;
 import edu.vanier.spaceshooter.models.Sprite;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -43,6 +41,8 @@ public class GameEngine {
     private boolean shooting = false;
     private ArrayList<Projectile> projectileArrayList = new ArrayList<>();
     private ArrayList<Invader> invaderArrayList = new ArrayList<>();
+    private ArrayList<MediumInvader> mediumInvaderArrayList = new ArrayList<>();
+    private ArrayList<LargeInvader> largeInvaderArraylist = new ArrayList<>();
     private ArrayList<Sprite> explosionArrayList = new ArrayList<>();
     private Boss boss;
     Pane animationPanel;
@@ -54,6 +54,11 @@ public class GameEngine {
     Image spaceship2 = new Image((Objects.requireNonNull(getClass().getResource("/images/ship2.png")).toExternalForm()));
     Image spaceship3 = new Image((Objects.requireNonNull(getClass().getResource("/images/ship3.png")).toExternalForm()));
     Image invaderImage = new Image((Objects.requireNonNull(getClass().getResource("/images/invader.png"))).toExternalForm());
+    Image invaderInvertedImage = new Image((Objects.requireNonNull(getClass().getResource("/images/invaderInverted.png"))).toExternalForm());
+    Image mediumInvaderImage = new Image((Objects.requireNonNull(getClass().getResource("/images/mediumInvader.png"))).toExternalForm());
+    Image mediumInvaderInvertedImage = new Image((Objects.requireNonNull(getClass().getResource("/images/mediumInvaderInverted.png"))).toExternalForm());
+    Image largeInvaderImage = new Image((Objects.requireNonNull(getClass().getResource("/images/largeInvader.png"))).toExternalForm());
+    Image largeInvaderInvertedImage = new Image((Objects.requireNonNull(getClass().getResource("/images/largeInvaderInverted.png"))).toExternalForm());
     Image bossImage = new Image((Objects.requireNonNull(getClass().getResource("/images/boss.png"))).toExternalForm());
     Image explosion = new Image((Objects.requireNonNull(getClass().getResource("/images/explosionGIF.gif"))).toExternalForm());
     Image invaderBullet = new Image(Objects.requireNonNull(getClass().getResource("/images/invaderBullet.png")).toExternalForm());
@@ -62,12 +67,14 @@ public class GameEngine {
     Image playerBulletGreen = new Image(Objects.requireNonNull(getClass().getResource("/images/playerBulletGreen.png")).toExternalForm());
     AudioClip playerShoot = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/blaster.mp3")).toExternalForm());
     AudioClip explosionSound = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/explosion.mp3")).toExternalForm());
+    AudioClip backgroundMusic = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/backgroundMusic.mp3")).toExternalForm());
     VBox gameOverVBox;
     VBox winBox;
     VBox hud;
     int level = 1;
     int firingMode;
-
+    int previousScore = 0;
+    String gameState = "playing";
 
     public GameEngine(Stage primaryStage, Pane animationPanel, VBox HUD, Label levelLabel, Label scoreLabel, Scene mainScene, Label livesLabel, Button restartButton, StackPane stackPane) {
         logger.info("Initializing MainAppController...");
@@ -80,7 +87,7 @@ public class GameEngine {
         this.livesLabel = livesLabel;
         this.restartButton = restartButton;
         this.primaryStage = primaryStage;
-        animationPanel.setPrefSize(600, 800);
+        animationPanel.setPrefSize(1280, 720);
         spaceShip = new Player(stackPane.getWidth()/2, stackPane.getHeight() * 3 / 4, 40, 40, "player");
         animationPanel.getChildren().add(spaceShip.getSprite());
         setUpHud();
@@ -94,6 +101,9 @@ public class GameEngine {
         setupKeyPressHandlers();
         initShootingDelay();
         initRestartButton();
+        gameState = "playing";
+        backgroundMusic.setCycleCount(Animation.INDEFINITE);
+        backgroundMusic.play();
     }
 
     private void setUpHud(){
@@ -119,6 +129,7 @@ public class GameEngine {
     }
 
     private void restart(){
+        gameState = "playing";
         invaderArrayList.clear();
         projectileArrayList.clear();
         animationPanel.getChildren().clear();
@@ -126,6 +137,7 @@ public class GameEngine {
         gameLoop.stop();
         delay.stop();
         spaceShip = new Player(stackPane.getWidth()/2, stackPane.getHeight() * 3 / 4, 40, 40, "player");
+        spaceShip.setScore(previousScore);
         spaceShip.setStackPane(stackPane);
         animationPanel.getChildren().addAll(spaceShip.getSprite());
         hud.getChildren().remove(restartButton);
@@ -186,37 +198,62 @@ public class GameEngine {
      */
     private void setupKeyPressHandlers() {
         // e the key event containing information about the key pressed.
-        mainScene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            switch (event.getCode()) {
-                case KeyCode.A: spaceShip.setLeft(true);break;
-                case KeyCode.D: spaceShip.setRight(true);break;
-                case KeyCode.W: spaceShip.setUp(true);break;
-                case KeyCode.S: spaceShip.setDown(true);break;
-                case KeyCode.SHIFT: spaceShip.setSpeedUp(1.5); break;
-                case KeyCode.E: firingMode = changeFiringMode(); break;
-                case KeyCode.F:
-                    for (int i = 0; i < invaderArrayList.size(); i++) {
-                        invaderArrayList.get(i).setStackPane(stackPane);
-                        spaceShip.setStackPane(stackPane);
+        if (!Objects.equals(gameState, "paused")) {
+            mainScene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                switch (event.getCode()) {
+                    case KeyCode.A:
+                        spaceShip.setLeft(true);
+                        break;
+                    case KeyCode.D:
+                        spaceShip.setRight(true);
+                        break;
+                    case KeyCode.W:
+                        spaceShip.setUp(true);
+                        break;
+                    case KeyCode.S:
+                        spaceShip.setDown(true);
+                        break;
+                    case KeyCode.SHIFT:
+                        spaceShip.setSpeedUp(1.5);
+                        break;
+                    case KeyCode.E:
+                        firingMode = changeFiringMode();
+                        break;
+                    case KeyCode.F:
+                        for (int i = 0; i < invaderArrayList.size(); i++) {
+                            invaderArrayList.get(i).setStackPane(stackPane);
+                            spaceShip.setStackPane(stackPane);
+                        }
+                        break;
+                    case KeyCode.SPACE: {
+                        shooting = true;
+                        break;
                     }
-                    break;
-                case KeyCode.SPACE: {
-                    shooting = true;
-                    break;
                 }
-            }
-        });
+            });
 
-        mainScene.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
-            switch (event.getCode()) {
-                case KeyCode.A: spaceShip.setLeft(false); break;
-                case KeyCode.D: spaceShip.setRight(false); break;
-                case KeyCode.W: spaceShip.setUp(false); break;
-                case KeyCode.S: spaceShip.setDown(false); break;
-                case KeyCode.SHIFT: spaceShip.setSpeedUp(1); break;
-                case KeyCode.SPACE: shooting = false;
-            }
-        });
+            mainScene.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
+                switch (event.getCode()) {
+                    case KeyCode.A:
+                        spaceShip.setLeft(false);
+                        break;
+                    case KeyCode.D:
+                        spaceShip.setRight(false);
+                        break;
+                    case KeyCode.W:
+                        spaceShip.setUp(false);
+                        break;
+                    case KeyCode.S:
+                        spaceShip.setDown(false);
+                        break;
+                    case KeyCode.SHIFT:
+                        spaceShip.setSpeedUp(1);
+                        break;
+                    case KeyCode.SPACE:
+                        shooting = false;
+                }
+            });
+        }
     }
 
     private int changeFiringMode() {
@@ -227,33 +264,42 @@ public class GameEngine {
     }
 
     private void generateInvaders() {
-        if (level ==1) {
+        if (level == 1) {
             for (int i = 0; i < 15; i++) {
+                Image image;
+                if (i % 2 == 0) image = invaderImage;
+                else image = invaderInvertedImage;
                 Invader invader = new Invader(
-                        100 + i * 100,
-                        150, 30, 30, "enemy",
-                        invaderImage, stackPane);
+                        Math.random()*(stackPane.getWidth() - 200) + 100,
+                        Math.random()*300 + 100, 30, 30, "enemy",
+                        image, stackPane);
                 invaderArrayList.add(invader);
                 animationPanel.getChildren().add(invader.getSprite());
             }
         }
         else if (level == 2){
             for (int i = 0; i < 20; i++) {
-                Invader invader = new Invader(
-                        100 + i * 80,
-                        150, 30, 30, "enemy",
-                        invaderImage, stackPane);
-                invaderArrayList.add(invader);
+                Image image;
+                if (i % 2 == 0) image = mediumInvaderImage;
+                else image = mediumInvaderInvertedImage;
+                MediumInvader invader = new MediumInvader(
+                        Math.random()*(stackPane.getWidth() - 200) + 100,
+                        Math.random()*300 + 100, 40, 40, "enemy",
+                        image, stackPane);
+                mediumInvaderArrayList.add(invader);
                 animationPanel.getChildren().add(invader.getSprite());
             }
         }
         else {
             for (int i = 0; i < 30; i++) {
-                Invader invader = new Invader(
+                Image image;
+                if (i % 2 == 0) image = largeInvaderImage;
+                else image = largeInvaderInvertedImage;
+                LargeInvader invader = new LargeInvader(
                         (int) (Math.random()*(stackPane.getWidth() - 100)),
-                        (int) (Math.random()*500), 30, 30, "enemy",
-                        invaderImage, stackPane);
-                invaderArrayList.add(invader);
+                        (int) (Math.random()*500), 50, 50, "enemy",
+                        image, stackPane);
+                largeInvaderArraylist.add(invader);
                 animationPanel.getChildren().add(invader.getSprite());
             }
             boss = new Boss(stackPane.getWidth()/2 - 100, stackPane.getHeight()/2 - 100, 100, 100, "boss", bossImage, stackPane);
@@ -292,42 +338,82 @@ public class GameEngine {
      * </p>
      */
     private void update() {
-        elapsedTime += 0.016;
         // Actions to be performed during each frame of the animation.
-        for (int i = 0; i < invaderArrayList.size(); i++) {
-            handleEnemyFiring(invaderArrayList.get(i));
-            invaderArrayList.get(i).setMoving(true);
-            invaderArrayList.get(i).moveUp();
-            invaderArrayList.get(i).moveDown();
-            invaderArrayList.get(i).moveLeft();
-            invaderArrayList.get(i).moveRight();
-        }
+        if (!Objects.equals(gameState, "paused")) {
+            elapsedTime += 0.016;
 
-        processProjectiles();
-        removeDeadSprites();
-        spaceShipCollisions();
-
-        if (elapsedTime == 0.016){
             for (int i = 0; i < invaderArrayList.size(); i++) {
+                handleEnemyFiring(invaderArrayList.get(i));
                 invaderArrayList.get(i).setMoving(true);
-                int random = (int)Math.ceil(Math.random()*4);
-                if (random == 1) invaderArrayList.get(i).setUp(true);
-                if (random == 2) invaderArrayList.get(i).setDown(true);
-                if (random == 3) invaderArrayList.get(i).setLeft(true);
-                if (random == 4) invaderArrayList.get(i).setRight(true);
+                invaderArrayList.get(i).moveUp();
+                invaderArrayList.get(i).moveDown();
+                invaderArrayList.get(i).moveLeft();
+                invaderArrayList.get(i).moveRight();
             }
-        }
-
-        if (elapsedTime == 0.096){
-            for (int i = 0; i < invaderArrayList.size(); i++) {
-                invaderArrayList.get(i).setMoving(false);
-                invaderArrayList.get(i).reset();
+            for (int i = 0; i < mediumInvaderArrayList.size(); i++) {
+                handleMediumEnemyFiring(mediumInvaderArrayList.get(i));
+                mediumInvaderArrayList.get(i).setMoving(true);
+                mediumInvaderArrayList.get(i).moveUp();
+                mediumInvaderArrayList.get(i).moveDown();
             }
-        }
+            for (int i = 0; i < largeInvaderArraylist.size(); i++) {
+                handleLargeEnemyFiring(largeInvaderArraylist.get(i));
+                largeInvaderArraylist.get(i).setMoving(true);
+                largeInvaderArraylist.get(i).moveUp();
+                largeInvaderArraylist.get(i).moveDown();
+                largeInvaderArraylist.get(i).moveLeft();
+                largeInvaderArraylist.get(i).moveRight();
+            }
 
-        // Reset the elapsed time.
-        if (elapsedTime > 2) {
-            elapsedTime = 0;
+            processProjectiles();
+            removeDeadSprites();
+            spaceShipCollisions();
+
+            if (elapsedTime == 0.016) {
+                for (int i = 0; i < invaderArrayList.size(); i++) {
+                    invaderArrayList.get(i).setMoving(true);
+                    int random = (int) Math.ceil(Math.random() * 4);
+                    if (random == 1) invaderArrayList.get(i).setUp(true);
+                    if (random == 2) invaderArrayList.get(i).setDown(true);
+                    if (random == 3) invaderArrayList.get(i).setLeft(true);
+                    if (random == 4) invaderArrayList.get(i).setRight(true);
+                }
+                for (int i = 0; i < mediumInvaderArrayList.size(); i++) {
+                    mediumInvaderArrayList.get(i).setMoving(true);
+                    int random = (int) Math.ceil(Math.random() * 4);
+                    if (random == 1) mediumInvaderArrayList.get(i).setUp(true);
+                    if (random >= 2) mediumInvaderArrayList.get(i).setDown(true);
+                }
+                for (int i = 0; i < largeInvaderArraylist.size(); i++) {
+                    largeInvaderArraylist.get(i).setMoving(true);
+                    int random = (int) Math.ceil(Math.random() * 4);
+                    if (random == 1) largeInvaderArraylist.get(i).setUp(true);
+                    if (random == 2) largeInvaderArraylist.get(i).setDown(true);
+                    if (random == 3) largeInvaderArraylist.get(i).setLeft(true);
+                    if (random == 4) largeInvaderArraylist.get(i).setRight(true);
+                }
+            }
+
+            if (elapsedTime == 0.096) {
+                for (int i = 0; i < invaderArrayList.size(); i++) {
+                    invaderArrayList.get(i).setMoving(false);
+                    invaderArrayList.get(i).reset();
+                }
+                for (int i = 0; i < mediumInvaderArrayList.size(); i++) {
+                    mediumInvaderArrayList.get(i).setMoving(false);
+                    mediumInvaderArrayList.get(i).reset();
+                }
+                for (int i = 0; i < largeInvaderArraylist.size(); i++) {
+                    largeInvaderArraylist.get(i).setMoving(false);
+                    largeInvaderArraylist.get(i).reset();
+                }
+            }
+
+            // Reset the elapsed time.
+            if (elapsedTime > 2) {
+                elapsedTime = 0;
+                if (!animationPanel.getChildren().contains(spaceShip.getSprite())) gameState = "paused";
+            }
         }
     }
 
@@ -380,6 +466,20 @@ public class GameEngine {
                 invaderGetsHit(invaderArrayList.get(i));
             }
         }
+        for (int i = 0; i < mediumInvaderArrayList.size(); i++) {
+            if (mediumInvaderArrayList.get(i).getSprite().getBoundsInParent().intersects(projectile.getSprite().getBoundsInParent()) && !projectile.isDead() && !mediumInvaderArrayList.get(i).isDead()) {
+                projectile.setDead(true);
+                projectile.getSprite().setDead(true);
+                mediumInvaderGetsHit(mediumInvaderArrayList.get(i));
+            }
+        }
+        for (int i = 0; i < largeInvaderArraylist.size(); i++) {
+            if (largeInvaderArraylist.get(i).getSprite().getBoundsInParent().intersects(projectile.getSprite().getBoundsInParent()) && !projectile.isDead() && !largeInvaderArraylist.get(i).isDead()) {
+                projectile.setDead(true);
+                projectile.getSprite().setDead(true);
+                largeInvaderGetsHit(largeInvaderArraylist.get(i));
+            }
+        }
         if (boss != null && !boss.isDead() && !projectile.isDead()) {
             if (projectile.getSprite().getBoundsInParent().intersects(boss.getSprite().getBoundsInParent())) {
                 projectile.setDead(true);
@@ -408,11 +508,31 @@ public class GameEngine {
             }
         }
     }
+    private void handleMediumEnemyFiring(MediumInvader invader) {
+        if (elapsedTime > 2) {
+            if (Math.random() < 0.4) {
+                shoot(invader.getSprite());
+            }
+        }
+    }
+    private void handleLargeEnemyFiring(LargeInvader invader) {
+        if (elapsedTime > 2) {
+            if (Math.random() < 0.5) {
+                shoot(invader.getSprite());
+            }
+        }
+    }
 
     private void spaceShipCollisions(){
         for (int i = 0; i < invaderArrayList.size(); i++) {
             if (spaceShip.getSprite().getBoundsInParent().intersects(invaderArrayList.get(i).getSprite().getBoundsInParent()) && !invaderArrayList.get(i).isDead() && !spaceShip.isDead()) {
                 invaderGetsHit(invaderArrayList.get(i));
+                playerGetsHit();
+            }
+        }
+        for (int i = 0; i < mediumInvaderArrayList.size(); i++) {
+            if (spaceShip.getSprite().getBoundsInParent().intersects(mediumInvaderArrayList.get(i).getSprite().getBoundsInParent()) && !mediumInvaderArrayList.get(i).isDead() && !spaceShip.isDead()) {
+                mediumInvaderGetsHit(mediumInvaderArrayList.get(i));
                 playerGetsHit();
             }
         }
@@ -425,15 +545,48 @@ public class GameEngine {
     }
 
     private void invaderGetsHit(Invader invader){
-        explosionSound.play();
-        spaceShip.setScore(spaceShip.getScore() + 1);
-        scoreLabel.setText("Score: " + spaceShip.getScore());
+        updateScorePlus1();
         handleExplosion(invader.getSprite());
         invader.setDead(true);
         invader.getSprite().setDead(true);
         invaderArrayList.remove(invader);
+        explosionSound.play();
+        checkNextLevel();
+    }
 
-        if (invaderArrayList.isEmpty()){
+    private void mediumInvaderGetsHit(MediumInvader invader){
+        invader.setLives(invader.getLives() - 1);
+        if (invader.getLives() == 0) {
+            updateScorePlus1();
+            handleExplosion(invader.getSprite());
+            invader.setDead(true);
+            invader.getSprite().setDead(true);
+            mediumInvaderArrayList.remove(invader);
+            explosionSound.play();
+            checkNextLevel();
+        }
+    }
+
+    private void largeInvaderGetsHit(LargeInvader invader){
+        invader.setLives(invader.getLives() - 1);
+        if (invader.getLives() == 0) {
+            updateScorePlus1();
+            handleExplosion(invader.getSprite());
+            invader.setDead(true);
+            invader.getSprite().setDead(true);
+            largeInvaderArraylist.remove(invader);
+            explosionSound.play();
+            checkNextLevel();
+        }
+    }
+
+    private void updateScorePlus1(){
+        spaceShip.setScore(spaceShip.getScore() + 1);
+        scoreLabel.setText("Score: " + spaceShip.getScore());
+    }
+
+    private void checkNextLevel(){
+        if (invaderArrayList.isEmpty() && mediumInvaderArrayList.isEmpty() && largeInvaderArraylist.isEmpty()) {
             if (boss != null && boss.isDead()) nextLevel();
             else if (boss == null) nextLevel();
         }
@@ -441,6 +594,7 @@ public class GameEngine {
 
     private void nextLevel(){
         if (level < 3) {
+            previousScore = spaceShip.getScore();
             gameOverVBox = new VBox();
             Label dead = new Label("Next Level");
             dead.setStyle("-fx-font-size: 40; -fx-text-fill: red");
@@ -472,26 +626,34 @@ public class GameEngine {
             });
         }
         else {
+            gameState = "paused";
             winBox = new VBox();
             winBox.setStyle("-fx-background-color: black");
             winBox.setAlignment(Pos.CENTER);
+            winBox.setSpacing(10);
             Label winLabel = new Label("Congratulations, you have defeated the invaders!");
-            winLabel.setStyle("-fx-text-fill: white");
+            winLabel.setStyle("-fx-text-fill: white; -fx-font-size: 64");
+            Label finalScore = new Label("Final Score: " + spaceShip.getScore());
+            finalScore.setStyle("-fx-text-fill: white");
             Button back = new Button("Back to Level 1");
             back.setOnAction(event -> backToLevel1());
             Button exit = new Button("Exit");
             exit.setOnAction(event -> primaryStage.hide());
-            winBox.getChildren().addAll(winLabel, back, exit);
+            winBox.getChildren().addAll(winLabel, finalScore, back, exit);
             stackPane.getChildren().add(winBox);
         }
     }
 
     private void backToLevel1() {
+        gameState = "playing";
         stackPane.getChildren().remove(winBox);
         spaceShip.setLives(3);
         level = 1;
+        firingMode = 1;
         spaceShip.setScore(0);
+        previousScore = 0;
         scoreLabel.setText("Score: " + spaceShip.getScore());
+        livesLabel.setText("Lives: " + spaceShip.getLives());
         levelLabel.setText("Level: " + level);
         stackPane.setStyle("-fx-background-image: url(/images/stars.png); -fx-background-size: 1920 1080");
         spaceShip.getSprite().setLayoutX(stackPane.getWidth()/2);
@@ -515,14 +677,39 @@ public class GameEngine {
         handleExplosion(spaceShip.getSprite());
         spaceShip.getSprite().setDead(true);
         spaceShip.setDead(true);
+        animationPanel.getChildren().remove(spaceShip.getSprite());
+        for (int i = 0; i < projectileArrayList.size(); i++) animationPanel.getChildren().remove(projectileArrayList.get(i));
         gameOverVBox = new VBox();
         Label dead = new Label("GAME OVER");
         dead.setStyle("-fx-font-size: 40; -fx-text-fill: red");
+        Label deadScore = new Label("Score: " + spaceShip.getScore());
+        deadScore.setStyle("-fx-font-size: 30; -fx-text-fill: white");
         Button restartOver = restartButton;
-        gameOverVBox.getChildren().addAll(dead, restartOver);
+        gameOverVBox.getChildren().addAll(dead, deadScore, restartOver);
+        if (level > 1){
+            Button returnToLevel1 = getLevel1Button();
+            gameOverVBox.getChildren().add(returnToLevel1);
+        }
         stackPane.getChildren().add(gameOverVBox);
         gameOverVBox.setStyle("-fx-alignment: center");
         handleExplosion(spaceShip.getSprite());
+    }
+
+    private Button getLevel1Button() {
+        Button returnToLevel1 = new Button("Return to Level 1");
+        returnToLevel1.setOnAction(event -> {
+            stackPane.getChildren().remove(gameOverVBox);
+            animationPanel.getChildren().clear();
+            projectileArrayList.clear();
+            invaderArrayList.clear();
+            mediumInvaderArrayList.clear();
+            largeInvaderArraylist.clear();
+            spaceShip = new Player(stackPane.getWidth()/2, stackPane.getHeight() * 3 / 4, 40, 40, "player");
+            animationPanel.getChildren().add(spaceShip.getSprite());
+            spaceShip.setStackPane(stackPane);
+            backToLevel1();
+        });
+        return returnToLevel1;
     }
 
     /**

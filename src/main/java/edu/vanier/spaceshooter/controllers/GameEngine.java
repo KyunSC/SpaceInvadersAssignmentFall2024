@@ -488,6 +488,7 @@ public class GameEngine {
 
     private void backToLevel1() {
         stackPane.getChildren().remove(winBox);
+        spaceShip.setLives(3);
         level = 1;
         spaceShip.setScore(0);
         scoreLabel.setText("Score: " + spaceShip.getScore());

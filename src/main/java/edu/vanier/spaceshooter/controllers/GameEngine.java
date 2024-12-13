@@ -454,12 +454,12 @@ public class GameEngine {
             if (level == 1) {
                 stackPane.setStyle("-fx-background-image: url(/images/singularity.jpg); -fx-background-size: 1920 1080");
                 firingMode = 2;
-                spaceShip.setImage(spaceship2);
+                spaceShip.getSprite().setImage(spaceship2);
             }
             else {
                 stackPane.setStyle("-fx-background-image: url(/images/spaceTime.jpg); -fx-background-size: 1920 1080");
                 firingMode = 3;
-                spaceShip.setImage(spaceship3);
+                spaceShip.getSprite().setImage(spaceship3);
             }
             level++;
             levelLabel.setText("Level " + level);

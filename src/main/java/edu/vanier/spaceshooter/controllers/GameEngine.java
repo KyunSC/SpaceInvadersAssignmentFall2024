@@ -133,7 +133,12 @@ public class GameEngine {
         setupGameWorld();
     }
 
-    
+    /**
+     * Calls all of the function
+     * puts the game state as playing
+     * set cycle count of the background music to indefinite
+     * stops all music and using switch case play the right song by checking the level
+     */
     public void setupGameWorld() {
         generateInvaders();
         initGameLoop();
@@ -154,6 +159,12 @@ public class GameEngine {
         }
     }
 
+    /**
+     * Set text to the hud
+     * sets stackpane to the spaceship
+     * add listener for the stackpane width to change the invaders, the boss and the players stackpane so that they can have an updated window size when it changes
+     * Add another listener that if the keycode is R then calls restart()
+     */
     private void setUpHud(){
         scoreLabel.setText("Score: " + spaceShip.getScore());
         livesLabel.setText("Lives: " + spaceShip.getLives());
@@ -172,11 +183,30 @@ public class GameEngine {
         });
     }
 
+    /**
+     * Restart button is not activated by space bar
+     * When pressed it calls restart()
+     */
     private void initRestartButton() {
         restartButton.setFocusTraversable(false);
         restartButton.setOnAction(event -> restart());
     }
 
+    /**
+     * sets game state to playing
+     * stops all current music
+     * using switch case to play the right song using level number
+     * clears all of the invader arraylists
+     * clears the projectile arraylist
+     * clears the animation pane
+     * removes gameOver VBox
+     * stops gameloop and delay
+     * Creates a new player
+     * set score to the score set at the beginning of the level
+     * Adds back the HUD
+     * stopAnimation
+     * then calls setUpGameWorld
+     */
     private void restart(){
         gameState = "playing";
         backgroundMusic.stop();
@@ -207,6 +237,9 @@ public class GameEngine {
         setupGameWorld();
     }
 
+    /**
+     * Loops moveUp/Down/Left/Right for the spaceship to move every frame
+     */
     private void initGameLoop() {
         // Create the game loop.
         gameLoop = new AnimationTimer() {
@@ -223,6 +256,9 @@ public class GameEngine {
         gameLoop.start();
     }
 
+    /**
+     * shooting delay to prevent infinte bullets
+     */
     private void initShootingDelay(){
         delay = new AnimationTimer() {
             @Override
@@ -233,6 +269,10 @@ public class GameEngine {
         delay.start();
     }
 
+    /**
+     * if delay time is smaller or equal to 0.48 and delay is active then add delay time
+     * or else set delauTime to 0 and shoot delay to 0
+     */
     private void shootingDelay(){
         if (shootDelayTime <= 0.48 && shootDelay) shootDelayTime += 0.016;
         else {
@@ -251,9 +291,14 @@ public class GameEngine {
      * <li>Pressing 'D' moves the spaceship to the right.</li>
      * <li>Pressing 'W' moves the spaceship up.</li>
      * <li>Pressing 'S' moves the spaceship down.</li>
+     * <li>Pressing 'R' calls restart()</li>
+     * <li>Pressing 'SHIFT' sets speedUp multiplier to 1.5X</li>
+     * <li>Pressing 'E' calls for change in firing mode</li>
+     * <li>Pressing 'F' changes the stackpane for the targeted sprites</li>
      * <li>Pressing the SPACE key triggers the spaceship to shoot.</li>
      * </ul>
      * </p>
+     * Releasing the buttons will do the opposite other than R, E
      */
     private void setupKeyPressHandlers() {
         // e the key event containing information about the key pressed.
@@ -281,6 +326,9 @@ public class GameEngine {
                     case KeyCode.F:
                         for (int i = 0; i < invaderArrayList.size(); i++) {
                             invaderArrayList.get(i).setStackPane(stackPane);
+                            mediumInvaderArrayList.get(i).setStackPane(stackPane);
+                            largeInvaderArraylist.get(i).setStackPane(stackPane);
+                            if (boss!=null) boss.setStackPane(stackPane);
                             spaceShip.setStackPane(stackPane);
                         }
                         break;
@@ -315,6 +363,11 @@ public class GameEngine {
         }
     }
 
+    /**
+     * Using level number, cycles through by adding one until it reaches the max then goes back to 1
+     * if level 1, then return firing mode 1
+     * @return new firingMode
+     */
     private int changeFiringMode() {
         if (level > 1) firingMode++;
         if (level == 2 && firingMode == 3) firingMode = 1;
@@ -322,6 +375,14 @@ public class GameEngine {
         return firingMode;
     }
 
+    /**
+     * Generates invaders to random position using math.random()
+     * Spawns using the level number
+     * level 1 spawns 15 regular invader
+     * level 2 spawns 25 mediumInvaders that are like divers
+     * level 3 spawns 30 largeInvader including a boss
+     * adds invader to the arraylist
+     */
     private void generateInvaders() {
         if (level == 1) {
             for (int i = 0; i < 15; i++) {
@@ -337,7 +398,7 @@ public class GameEngine {
             }
         }
         else if (level == 2){
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < 25; i++) {
                 Image image;
                 if (i % 2 == 0) image = mediumInvaderImage;
                 else image = mediumInvaderInvertedImage;

@@ -5,6 +5,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+/**
+ * General Sprite class used for the objects in the animation pane
+ */
 public class Sprite extends ImageView {
 
     private boolean dead = false;

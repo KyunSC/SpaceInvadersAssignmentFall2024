@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"edu.vanier.spaceshooter"},{"l":"edu.vanier.spaceshooter.controllers"},{"l":"edu.vanier.spaceshooter.entities"},{"l":"edu.vanier.spaceshooter.models"}];updateSearchResults();

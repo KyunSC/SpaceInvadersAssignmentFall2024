@@ -12,11 +12,27 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * Controller that handles the main menu
+ */
 public class SpaceShooterApp extends Application {
 
     private final static Logger logger = LoggerFactory.getLogger(SpaceShooterApp.class);
     MainAppFXMLController controller;
 
+    /**
+     *
+     * @param primaryStage the primary stage for this application, onto which
+     * the application scene can be set.
+     * Applications may create other stages, if needed, but they will not be
+     * primary stages.
+     * Loads the FXML file
+     * Creates a new Scene which is 1568 x 1080
+     * Sets the scene and shows it
+     * Scene has a listener where if F is pressed then it sets to full screen
+     *
+     */
     @Override
     public void start(Stage primaryStage) {
         try {
@@ -44,6 +60,11 @@ public class SpaceShooterApp extends Application {
         }
     }
 
+    /**
+     *
+     * @throws Exception
+     * Calls stop animation in the mainAppFXMLController
+     */
     @Override
     public void stop() throws Exception {
         // Stop the animation timer upon closing the main stage.

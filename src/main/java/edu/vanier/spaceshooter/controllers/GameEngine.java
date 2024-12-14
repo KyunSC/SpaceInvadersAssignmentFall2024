@@ -152,6 +152,14 @@ public class GameEngine {
 
     private void restart(){
         gameState = "playing";
+        backgroundMusic.stop();
+        backgroundMusic2.stop();
+        backgroundMusic3.stop();
+        switch (level){
+            case 1 -> backgroundMusic.play();
+            case 2 -> backgroundMusic2.play();
+            case 3 -> backgroundMusic3.play();
+        }
         invaderArrayList.clear();
         mediumInvaderArrayList.clear();
         largeInvaderArraylist.clear();

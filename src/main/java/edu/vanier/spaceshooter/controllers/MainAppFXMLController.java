@@ -25,6 +25,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * FXML Controller class of the MainApp UI.
+ * Animation pane is used for the sprites
+ * StackPane is used for UI/HUD
+ * Shoot delay is used to add a delay to the shoot() method
+ *
+ *
  */
 public class MainAppFXMLController {
 
@@ -35,16 +40,8 @@ public class MainAppFXMLController {
     private StackPane stackPane;
 
     private Stage primaryStage;
-    private double elapsedTime = 0;
-    private Player spaceShip;
     private Scene mainScene;
     AnimationTimer gameLoop;
-    private boolean shootDelay = false;
-    private double shootDelayTime = 0;
-    private boolean shooting = false;
-    private ArrayList<Projectile> projectileArrayList = new ArrayList<>();
-    private ArrayList<Invader> invaderArrayList = new ArrayList<>();
-    private int score = 0;
     private AudioClip mainMenuMusic = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/mainMenuMusic.mp3")).toExternalForm());
 
     @FXML

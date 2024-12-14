@@ -74,10 +74,12 @@ public class GameEngine {
     AudioClip backgroundMusic = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/backgroundMusic.mp3")).toExternalForm());
     AudioClip backgroundMusic2 = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/backgroundMusic2.mp3")).toExternalForm());
     AudioClip backgroundMusic3 = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/backgroundMusic3.mp3")).toExternalForm());
+    AudioClip endMusic = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/end.mp3")).toExternalForm());
     AudioClip mediumHit = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/mediumHit.mp3")).toExternalForm());
     AudioClip largeHit = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/largeHit.mp3")).toExternalForm());
     AudioClip bossHit = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/bossHit.mp3")).toExternalForm());
     AudioClip playerHit = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/playerHit.mp3")).toExternalForm());
+    AudioClip nextLevelSound = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/nextLevel.mp3")).toExternalForm());
     VBox gameOverVBox;
     VBox winBox;
     VBox hud;
@@ -115,7 +117,14 @@ public class GameEngine {
         backgroundMusic.setCycleCount(Animation.INDEFINITE);
         backgroundMusic2.setCycleCount(Animation.INDEFINITE);
         backgroundMusic3.setCycleCount(Animation.INDEFINITE);
-        backgroundMusic.play();
+        backgroundMusic.stop();
+        backgroundMusic2.stop();
+        backgroundMusic3.stop();
+        switch (level){
+            case 1 -> backgroundMusic.play();
+            case 2 -> backgroundMusic2.play();
+            case 3 -> backgroundMusic3.play();
+        }
     }
 
     private void setUpHud(){
@@ -124,9 +133,10 @@ public class GameEngine {
         spaceShip.setStackPane(stackPane);
         stackPane.widthProperty().addListener((_, _, _) -> {
             spaceShip.setStackPane(stackPane);
-            for (int i = 0; i < invaderArrayList.size(); i++) {
-                invaderArrayList.get(i).setStackPane(stackPane);
-            }
+            for (int i = 0; i < invaderArrayList.size(); i++) invaderArrayList.get(i).setStackPane(stackPane);
+            for (int i = 0; i < mediumInvaderArrayList.size(); i++) mediumInvaderArrayList.get(i).setStackPane(stackPane);
+            for (int i = 0; i < largeInvaderArraylist.size(); i++) largeInvaderArraylist.get(i).setStackPane(stackPane);
+            if (boss!=null) boss.setStackPane(stackPane);
         });
         mainScene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (Objects.requireNonNull(event.getCode()) == KeyCode.R) {
@@ -380,6 +390,8 @@ public class GameEngine {
             }
             if (boss != null){
                 handleBossFiring(boss);
+                boss.moveLeft();
+                boss.moveRight();
             }
 
             processProjectiles();
@@ -390,24 +402,38 @@ public class GameEngine {
                 for (int i = 0; i < invaderArrayList.size(); i++) {
                     invaderArrayList.get(i).setMoving(true);
                     int random = (int) Math.ceil(Math.random() * 4);
-                    if (random == 1) invaderArrayList.get(i).setUp(true);
-                    if (random == 2) invaderArrayList.get(i).setDown(true);
-                    if (random == 3) invaderArrayList.get(i).setLeft(true);
-                    if (random == 4) invaderArrayList.get(i).setRight(true);
+                    switch (random){
+                        case 1 -> invaderArrayList.get(i).setUp(true);
+                        case 2 -> invaderArrayList.get(i).setDown(true);
+                        case 3 -> invaderArrayList.get(i).setLeft(true);
+                        case 4 -> invaderArrayList.get(i).setRight(true);
+                    }
                 }
                 for (int i = 0; i < mediumInvaderArrayList.size(); i++) {
                     mediumInvaderArrayList.get(i).setMoving(true);
                     int random = (int) Math.ceil(Math.random() * 4);
-                    if (random == 1) mediumInvaderArrayList.get(i).setUp(true);
-                    if (random >= 2) mediumInvaderArrayList.get(i).setDown(true);
+                    switch (random){
+                        case 1 -> mediumInvaderArrayList.get(i).setUp(true);
+                        case 2, 3, 4 -> mediumInvaderArrayList.get(i).setDown(true);
+                    }
                 }
                 for (int i = 0; i < largeInvaderArraylist.size(); i++) {
                     largeInvaderArraylist.get(i).setMoving(true);
                     int random = (int) Math.ceil(Math.random() * 4);
-                    if (random == 1) largeInvaderArraylist.get(i).setUp(true);
-                    if (random == 2) largeInvaderArraylist.get(i).setDown(true);
-                    if (random == 3) largeInvaderArraylist.get(i).setLeft(true);
-                    if (random == 4) largeInvaderArraylist.get(i).setRight(true);
+                    switch (random){
+                        case 1 -> largeInvaderArraylist.get(i).setUp(true);
+                        case 2 -> largeInvaderArraylist.get(i).setDown(true);
+                        case 3 -> largeInvaderArraylist.get(i).setLeft(true);
+                        case 4 -> largeInvaderArraylist.get(i).setRight(true);
+                    }
+                }
+                if (boss != null){
+                    boss.setMoving(true);
+                    int random = (int) Math.ceil(Math.random()*2);
+                    switch (random){
+                        case 1 -> boss.setLeft(true);
+                        case 2 -> boss.setRight(true);
+                    }
                 }
             }
 
@@ -424,6 +450,10 @@ public class GameEngine {
                     largeInvaderArraylist.get(i).setMoving(false);
                     largeInvaderArraylist.get(i).reset();
                 }
+                if (boss != null) {
+                    boss.setMoving(false);
+                    boss.reset();
+                }
             }
 
             // Reset the elapsed time.
@@ -437,6 +467,7 @@ public class GameEngine {
     private void processProjectiles(){
         for (int i = 0; i < projectileArrayList.size(); i++) {
             if (Objects.equals(projectileArrayList.get(i).getType(), "enemybullet")) handleEnemyBullet(projectileArrayList.get(i));
+            else if (Objects.equals(projectileArrayList.get(i).getType(), "bossbullet")) handleEnemyBullet(projectileArrayList.get(i));
             else if (Objects.equals(projectileArrayList.get(i).getType().substring(0,12), "playerbullet")) {
                 handlePlayerBullet(projectileArrayList.get(i));
             }
@@ -468,6 +499,7 @@ public class GameEngine {
             if (invaderArrayList.get(i).getSprite().getBoundsInParent().intersects(projectile.getSprite().getBoundsInParent()) && !projectile.isDead() && !invaderArrayList.get(i).isDead()) {
                 projectile.setDead(true);
                 projectile.getSprite().setDead(true);
+                projectileArrayList.remove(projectile);
                 invaderGetsHit(invaderArrayList.get(i));
             }
         }
@@ -475,6 +507,7 @@ public class GameEngine {
             if (mediumInvaderArrayList.get(i).getSprite().getBoundsInParent().intersects(projectile.getSprite().getBoundsInParent()) && !projectile.isDead() && !mediumInvaderArrayList.get(i).isDead()) {
                 projectile.setDead(true);
                 projectile.getSprite().setDead(true);
+                projectileArrayList.remove(projectile);
                 mediumInvaderGetsHit(mediumInvaderArrayList.get(i));
             }
         }
@@ -482,6 +515,7 @@ public class GameEngine {
             if (largeInvaderArraylist.get(i).getSprite().getBoundsInParent().intersects(projectile.getSprite().getBoundsInParent()) && !projectile.isDead() && !largeInvaderArraylist.get(i).isDead()) {
                 projectile.setDead(true);
                 projectile.getSprite().setDead(true);
+                projectileArrayList.remove(projectile);
                 largeInvaderGetsHit(largeInvaderArraylist.get(i));
             }
         }
@@ -489,7 +523,18 @@ public class GameEngine {
             if (projectile.getSprite().getBoundsInParent().intersects(boss.getSprite().getBoundsInParent())) {
                 projectile.setDead(true);
                 projectile.getSprite().setDead(true);
+                projectileArrayList.remove(projectile);
                 bossGetsHit();
+            }
+        }
+        for (int i = 0; i < projectileArrayList.size(); i++) {
+            if (projectile.getSprite().getBoundsInParent().intersects(projectileArrayList.get(i).getSprite().getBoundsInParent()) && !projectile.isDead() && projectileArrayList.get(i) != projectile && !projectileArrayList.get(i).getType().startsWith("player")){
+                animationPanel.getChildren().removeAll(projectile.getSprite(), projectileArrayList.get(i).getSprite());
+                projectileArrayList.get(i).setDead(true);
+                projectileArrayList.get(i).getSprite().setDead(true);
+                projectile.setDead(true);
+                projectileArrayList.remove(projectileArrayList.get(i));
+                projectileArrayList.remove(projectile);
             }
         }
     }
@@ -532,7 +577,7 @@ public class GameEngine {
         }
     }
     private void handleBossFiring(Boss boss) {
-        if (elapsedTime > 2) shoot(boss.getSprite());
+        if (elapsedTime > 2 || elapsedTime % 0.032 == 0) shoot(boss.getSprite());
     }
 
     private void spaceShipCollisions(){
@@ -555,7 +600,8 @@ public class GameEngine {
             }
         }
         if (boss != null) {
-            if (spaceShip.getSprite().getBoundsInParent().intersects(boss.getSprite().getBoundsInParent())) {
+            if (spaceShip.getSprite().getBoundsInParent().intersects(boss.getSprite().getBoundsInParent()) && !spaceShip.isDead()) {
+                spaceShip.setLives(1);
                 playerGetsHit();
                 bossGetsHit();
             }
@@ -563,8 +609,10 @@ public class GameEngine {
     }
 
     private void playerGetsHit(){
-        if (spaceShip.getLives() <= 1) {
+        if (spaceShip.getLives() <= 1 && !spaceShip.isDead()) {
             explosionSound.play();
+            spaceShip.setDead(true);
+            animationPanel.getChildren().remove(spaceShip);
             gameOver();
         }
         else {
@@ -628,19 +676,21 @@ public class GameEngine {
             previousScore = spaceShip.getScore();
             gameOverVBox = new VBox();
             Label dead = new Label("Next Level");
-            dead.setStyle("-fx-font-size: 40; -fx-text-fill: red");
+            dead.setStyle("-fx-font-size: 40; -fx-text-fill: #0380ff");
             Button nextLevel = new Button("Continue");
+            nextLevel.setStyle("-fx-background-color: green; -fx-text-fill: white");
             nextLevel.setFocusTraversable(false);
             gameOverVBox.getChildren().addAll(dead, nextLevel);
             stackPane.getChildren().add(gameOverVBox);
             gameOverVBox.setStyle("-fx-alignment: center");
 
             nextLevel.setOnAction(event -> {
+                nextLevelSound.play();
                 for (Projectile projectile : projectileArrayList) animationPanel.getChildren().remove(projectile.getSprite());
                 projectileArrayList.clear();
                 stackPane.getChildren().remove(gameOverVBox);
-
-                if (level == 1) {
+                level++;
+                if (level == 2) {
                     backgroundMusic.stop();
                     backgroundMusic2.play();
                     stackPane.setStyle("-fx-background-image: url(/images/singularity.jpg); -fx-background-size: 1920 1080");
@@ -653,7 +703,6 @@ public class GameEngine {
                     firingMode = 3;
                     spaceShip.getSprite().setImage(spaceship3);
                 }
-                level++;
                 levelLabel.setText("Level " + level);
                 spaceShip.getSprite().setLayoutY(stackPane.getHeight() * 3 / 4);
                 spaceShip.getSprite().setLayoutX(stackPane.getWidth() / 2);
@@ -662,6 +711,8 @@ public class GameEngine {
         }
         else {
             gameState = "paused";
+            backgroundMusic3.stop();
+            endMusic.play();
             winBox = new VBox();
             winBox.setStyle("-fx-background-color: black");
             winBox.setAlignment(Pos.CENTER);
@@ -683,20 +734,27 @@ public class GameEngine {
 
     private void backToLevel1() {
         gameState = "playing";
+        backgroundMusic.stop();
+        backgroundMusic2.stop();
+        backgroundMusic3.stop();
+        endMusic.stop();
+        backgroundMusic.play();
         stackPane.getChildren().remove(winBox);
-        spaceShip.setLives(3);
+        animationPanel.getChildren().clear();
+        projectileArrayList.clear();
+        spaceShip = new Player(stackPane.getWidth()/2, stackPane.getHeight() * 3 / 4, 40, 40, "player");
+        spaceShip.setStackPane(stackPane);
+        animationPanel.getChildren().add(spaceShip.getSprite());
         level = 1;
         firingMode = 1;
-        spaceShip.setScore(0);
         previousScore = 0;
+        if (boss != null) boss = null;
         hud.getChildren().remove(restartButton);
         hud.getChildren().add(restartButton);
         scoreLabel.setText("Score: " + spaceShip.getScore());
         livesLabel.setText("Lives: " + spaceShip.getLives());
         levelLabel.setText("Level: " + level);
         stackPane.setStyle("-fx-background-image: url(/images/stars.png); -fx-background-size: 1920 1080");
-        spaceShip.getSprite().setLayoutX(stackPane.getWidth()/2);
-        spaceShip.getSprite().setLayoutY(stackPane.getHeight()*3/4);
         generateInvaders();
     }
 
@@ -719,6 +777,7 @@ public class GameEngine {
         animationPanel.getChildren().remove(spaceShip.getSprite());
         for (int i = 0; i < projectileArrayList.size(); i++) animationPanel.getChildren().remove(projectileArrayList.get(i));
         gameOverVBox = new VBox();
+        gameOverVBox.setSpacing(10);
         Label dead = new Label("GAME OVER");
         dead.setStyle("-fx-font-size: 40; -fx-text-fill: red");
         Label deadScore = new Label("Score: " + spaceShip.getScore());
@@ -739,11 +798,12 @@ public class GameEngine {
         Button returnToLevel1 = new Button("Return to Level 1");
         returnToLevel1.setOnAction(event -> {
             stackPane.getChildren().remove(gameOverVBox);
-            animationPanel.getChildren().clear();
             projectileArrayList.clear();
             invaderArrayList.clear();
             mediumInvaderArrayList.clear();
             largeInvaderArraylist.clear();
+            if (boss != null) boss = null;
+            animationPanel.getChildren().clear();
             spaceShip = new Player(stackPane.getWidth()/2, stackPane.getHeight() * 3 / 4, 40, 40, "player");
             animationPanel.getChildren().add(spaceShip.getSprite());
             spaceShip.setStackPane(stackPane);
@@ -780,9 +840,9 @@ public class GameEngine {
      * either an enemy or the spaceship.
      */
     private void shoot(Sprite firingEntity) {
-        if (!shootDelay && !spaceShip.isDead()){
+        if (!spaceShip.isDead()){
             // The firing entity can be either an enemy or the spaceship.
-            if (Objects.equals(firingEntity.getType(), "player") && shooting && !Objects.equals(gameState, "paused")){
+            if (Objects.equals(firingEntity.getType(), "player") && shooting && !Objects.equals(gameState, "paused") && !shootDelay){
                 Image bulletImage;
                 switch (firingMode){
                     case 2 -> {
@@ -822,6 +882,11 @@ public class GameEngine {
                 shootDelay = true;
             }
             else if (Objects.equals(firingEntity.getType(), "enemy")) {
+                Projectile bullet = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 20, 40, firingEntity.getType() + "bullet", invaderBullet);
+                projectileArrayList.add(bullet);
+                animationPanel.getChildren().add(bullet.getSprite());
+            }
+            else if (Objects.equals(firingEntity.getType(), "boss")) {
                 Projectile bullet = new Projectile((int) firingEntity.getLayoutX() + 20, (int) firingEntity.getLayoutY(), 20, 40, firingEntity.getType() + "bullet", invaderBullet);
                 projectileArrayList.add(bullet);
                 animationPanel.getChildren().add(bullet.getSprite());

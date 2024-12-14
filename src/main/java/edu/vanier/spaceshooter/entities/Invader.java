@@ -41,7 +41,7 @@ public class Invader extends Sprite {
 
     public void moveRight() {
         if (right) {
-            if (sprite.getLayoutY() < stackPane.getWidth() - 100 || sprite.getLayoutY() < 1700) sprite.setLayoutX(sprite.getLayoutX() + 5);
+            if (sprite.getLayoutX() < stackPane.getWidth() - 100 || sprite.getLayoutX() < 1800) sprite.setLayoutX(sprite.getLayoutX() + 5);
         }
     }
 

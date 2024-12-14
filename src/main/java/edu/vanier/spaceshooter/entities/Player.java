@@ -21,7 +21,7 @@ public class Player extends ImageView {
 
     public Player(double x, double y, double width, double height, String type) {
         this.sprite = new Sprite(x, y, width, height, type, spaceShipImage);
-        this.lives = 3;
+        this.lives = 300;
         this.score = 0;
     }
 

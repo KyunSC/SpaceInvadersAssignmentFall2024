@@ -36,13 +36,19 @@ public class LargeInvader extends Sprite {
 
     public void moveLeft() {
         if (left) {
-            if (sprite.getLayoutX() > 100) sprite.setLayoutX(sprite.getLayoutX() - 5);
+            if (sprite.getLayoutX() > stackPane.getWidth() - 100) sprite.setLayoutX(sprite.getLayoutX() - 10);
+            if (sprite.getLayoutY() < stackPane.getHeight() - 100) sprite.setLayoutY(sprite.getLayoutY() + 10);
+            if (sprite.getLayoutX() > 200) sprite.setLayoutX(sprite.getLayoutX() - 10);
+            if (sprite.getLayoutX() > stackPane.getWidth() - 100) sprite.setLayoutX(sprite.getLayoutX() - 10);
         }
     }
 
     public void moveRight() {
         if (right) {
-            if (sprite.getLayoutY() < stackPane.getWidth() - 100) sprite.setLayoutX(sprite.getLayoutX() + 5);
+            if (sprite.getLayoutX() < stackPane.getWidth() - 100) sprite.setLayoutX(sprite.getLayoutX() + 10);
+            if (sprite.getLayoutY() < stackPane.getHeight() - 100) sprite.setLayoutY(sprite.getLayoutY() + 10);
+            if (sprite.getLayoutX() > 200) sprite.setLayoutX(sprite.getLayoutX() - 10);
+            if (sprite.getLayoutX() < stackPane.getWidth() - 100) sprite.setLayoutX(sprite.getLayoutX() + 10);
         }
     }
 

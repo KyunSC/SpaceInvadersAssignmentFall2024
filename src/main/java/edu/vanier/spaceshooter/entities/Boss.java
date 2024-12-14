@@ -15,7 +15,7 @@ public class Boss extends Sprite {
     private double y;
     private double width;
     private double height;
-    private int lives = 100;
+    private int lives = 50;
     private Sprite sprite;
     private StackPane stackPane;
     private boolean moving = false;
@@ -36,25 +36,13 @@ public class Boss extends Sprite {
 
     public void moveLeft() {
         if (left) {
-            if (sprite.getLayoutX() > 100) sprite.setLayoutX(sprite.getLayoutX() - 5);
+            if (sprite.getLayoutX() > 200) sprite.setLayoutX(sprite.getLayoutX() - (Math.random()*30 + 20));
         }
     }
 
     public void moveRight() {
         if (right) {
-            if (sprite.getLayoutY() < stackPane.getWidth() - 100) sprite.setLayoutX(sprite.getLayoutX() + 5);
-        }
-    }
-
-    public void moveUp() {
-        if (up) {
-            if (sprite.getLayoutY() > 100) sprite.setLayoutY(sprite.getLayoutY() - 5);
-        }
-    }
-
-    public void moveDown() {
-        if (down) {
-            if (sprite.getLayoutY() < stackPane.getHeight() - 100) sprite.setLayoutY(sprite.getLayoutY() + 5);
+            if (sprite.getLayoutX() < stackPane.getWidth() - 200 || sprite.getLayoutX() < 1680) sprite.setLayoutX(sprite.getLayoutX() + (Math.random()*30 + 20));
         }
     }
 

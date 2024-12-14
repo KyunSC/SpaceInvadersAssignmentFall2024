@@ -570,7 +570,8 @@ public class GameEngine {
 
     /**
      * Cycles through the projectile arraylist
-     * 
+     * Checks the type that it comes from and calls the appropriate method either handleEnemyBullet, or handlePlayerBullet
+     *
      */
     private void processProjectiles(){
         for (int i = 0; i < projectileArrayList.size(); i++) {
@@ -582,6 +583,12 @@ public class GameEngine {
         }
     }
 
+    /**
+     *
+     * @param projectile projectile from the invader
+     *                   moves down the sprite
+     *                   If it collides with the player then kill the projectile and call playerGetsHit()
+     */
     private void handleEnemyBullet(Projectile projectile) {
         projectile.moveDown();
         // Check for collision with the spaceship
@@ -592,6 +599,16 @@ public class GameEngine {
         }
     }
 
+    /**
+     *
+     * @param projectile projectile from the player
+     *                   Checks the type and moves the projectile appropriately
+     *                   Then Cycles through the invaderArrayList to see if the projectile hits any invaders
+     *                   If so the kill the projectile then call invadergetsHit
+     *                   do the same for the other lists of invaders and the boss, but call the right method for when the invader gets hit
+     *
+     *
+     */
     private void handlePlayerBullet(Projectile projectile) {
         switch (projectile.getType()){
             case "playerbullet": projectile.moveUp(); break;
@@ -647,6 +664,15 @@ public class GameEngine {
         }
     }
 
+    /**
+     *
+     * When the boss gets hit, it calls this method
+     * Starts by removing one from the number of remaining lives
+     * Update the score by adding one by calling the method
+     * Checks if the boss is alive or not by checking the number of remaining lives
+     * if so the kill the boss and remove it, handles explosion plays sound effect
+     * 
+     */
     private void bossGetsHit() {
         boss.setLives(boss.getLives() - 1);
         updateScorePlus1();

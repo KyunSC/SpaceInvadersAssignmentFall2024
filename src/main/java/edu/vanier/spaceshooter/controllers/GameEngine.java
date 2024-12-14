@@ -671,7 +671,7 @@ public class GameEngine {
      * Update the score by adding one by calling the method
      * Checks if the boss is alive or not by checking the number of remaining lives
      * if so the kill the boss and remove it, handles explosion plays sound effect
-     * 
+     * if it is still alive then play another sound effect for confirming the hit to the player
      */
     private void bossGetsHit() {
         boss.setLives(boss.getLives() - 1);
@@ -689,6 +689,11 @@ public class GameEngine {
         else bossHit.play();
     }
 
+    /**
+     *
+     * @param invader invader that will be shooting
+     *                Random 30% chance of shooting everytime this method is called
+     */
     private void handleEnemyFiring(Invader invader) {
         if (elapsedTime > 2) {
             if (Math.random() < 0.3) {
@@ -696,6 +701,12 @@ public class GameEngine {
             }
         }
     }
+
+    /**
+     *
+     * @param invader mediumInvader that will be shooting
+     *                Random 40% chance of shooting everytime this function is called
+     */
     private void handleMediumEnemyFiring(MediumInvader invader) {
         if (elapsedTime > 2) {
             if (Math.random() < 0.4) {
@@ -703,6 +714,12 @@ public class GameEngine {
             }
         }
     }
+
+    /**
+     *
+     * @param invader LargeInvader that may shoot
+     *                50% chance of the invader shooting
+     */
     private void handleLargeEnemyFiring(LargeInvader invader) {
         if (elapsedTime > 2) {
             if (Math.random() < 0.5) {
@@ -710,10 +727,20 @@ public class GameEngine {
             }
         }
     }
+
+    /**
+     *
+     * @param boss the boss will shoot everytime this is called
+     */
     private void handleBossFiring(Boss boss) {
         if (elapsedTime > 2 || elapsedTime % 0.032 == 0) shoot(boss.getSprite());
     }
 
+    /**
+     * Cycles through the invader, mediumInvader, largeinvader lists and the boss to check if they collide with the player sprite using intersects and bounds in parent
+     * If so then call the appropriate invadergetshit for the type, then call playergetshit
+     * If the player collides with the boss, he immediately loses setting lives to 0 and calling the playergetshitmethod
+     */
     private void spaceShipCollisions(){
         for (int i = 0; i < invaderArrayList.size(); i++) {
             if (spaceShip.getSprite().getBoundsInParent().intersects(invaderArrayList.get(i).getSprite().getBoundsInParent()) && !invaderArrayList.get(i).isDead() && !spaceShip.isDead()) {
@@ -742,6 +769,11 @@ public class GameEngine {
         }
     }
 
+    /**
+     * Plays sound effect when and explosion when player dies
+     * checks if the player is dead or not after getting hit
+     * if so then kill the player and call gameOver()
+     */
     private void playerGetsHit(){
         if (spaceShip.getLives() <= 1 && !spaceShip.isDead()) {
             explosionSound.play();
@@ -756,6 +788,11 @@ public class GameEngine {
         livesLabel.setText("Lives: " + spaceShip.getLives());
     }
 
+    /**
+     * Updates score plus 1
+     * @param invader invader that was hit
+     *                sets dead and plays sound
+     */
     private void invaderGetsHit(Invader invader){
         updateScorePlus1();
         handleExplosion(invader.getSprite());
@@ -766,6 +803,13 @@ public class GameEngine {
         checkNextLevel();
     }
 
+    /**
+     *
+     * Checks if the invader is dead or not after getting shot
+     * updates the score then plays the sound effect of getting hit or explosion if it dies
+     *
+     * @param invader medium that gets hit
+     */
     private void mediumInvaderGetsHit(MediumInvader invader){
         invader.setLives(invader.getLives() - 1);
         if (invader.getLives() == 0) {
@@ -780,6 +824,13 @@ public class GameEngine {
         else mediumHit.play();
     }
 
+    /**
+     *
+     * Checks if the invader is dead or not after getting shot
+     * updates the score then plays the sound effect of getting hit or explosion if it dies
+     *
+     * @param invader large that gets hit
+     */
     private void largeInvaderGetsHit(LargeInvader invader){
         invader.setLives(invader.getLives() - 1);
         if (invader.getLives() == 0) {
@@ -793,11 +844,17 @@ public class GameEngine {
         } else largeHit.play();
     }
 
+    /**
+     * adds one to the score then updates the label
+     */
     private void updateScorePlus1(){
         spaceShip.setScore(spaceShip.getScore() + 1);
         scoreLabel.setText("Score: " + spaceShip.getScore());
     }
 
+    /**
+     * checks if all of the enemies are dead, if so then call nextLevel()
+     */
     private void checkNextLevel(){
         if (invaderArrayList.isEmpty() && mediumInvaderArrayList.isEmpty() && largeInvaderArraylist.isEmpty()) {
             if (boss != null && boss.isDead()) nextLevel();
@@ -805,6 +862,16 @@ public class GameEngine {
         }
     }
 
+    /**
+     * If level is not 3 then, sets the previous to store for when the player resets
+     * Creates a vbox with labels to congratulate player and adds a button continue that on action will play a sound then loads in a new level
+     * it plays the new song
+     * add 1 to the level count
+     * then chnages the level number
+     * generates invader which will geneerte using the new invader sincve the level number has gone up
+     * if level is 3 then congratulate the player and display the final score ads wwell as 2 button
+     * one button to restart the current level and another to go back to level 1, which on action call either restart() or backtolevel1()
+     */
     private void nextLevel(){
         if (level < 3) {
             previousScore = spaceShip.getScore();
@@ -866,6 +933,10 @@ public class GameEngine {
         }
     }
 
+    /**
+     * Stops all music alnd playes the level 1 music
+     *
+     */
     private void backToLevel1() {
         gameState = "playing";
         backgroundMusic.stop();
@@ -972,6 +1043,7 @@ public class GameEngine {
      *
      * @param firingEntity The entity that is firing the bullet, which can be
      * either an enemy or the spaceship.
+     *                     Chnages the bullet by checking the firing mode
      */
     private void shoot(Sprite firingEntity) {
         if (!spaceShip.isDead()){
@@ -1028,10 +1100,17 @@ public class GameEngine {
         }
     }
 
+    /**
+     * Sets the scene
+     * @param scene
+     */
     public void setScene(Scene scene) {
         mainScene = scene;
     }
 
+    /**
+     * Stops the animation
+     */
     public void stopAnimation() {
         if (gameLoop != null) {
             gameLoop.stop();

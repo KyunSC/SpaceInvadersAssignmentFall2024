@@ -150,28 +150,57 @@ public class LargeInvader extends Sprite {
         this.stackPane = stackPane;
     }
 
+    /**
+     *
+     * @param left true or false which pauses or allows the invader to moveLeft()
+     */
     public void setLeft(boolean left) {
         this.left = left;
     }
+    /**
+     *
+     * @param right true or false which pauses or allows the invader to moveRight()
+     */
     public void setRight(boolean right) {
         this.right = right;
     }
+    /**
+     *
+     * @param up true or false which pauses or allows the invader to moveUp()
+     */
     public void setUp(boolean up) {
         this.up = up;
     }
+    /**
+     *
+     * @param down true or false which pauses or allows the invader to moveDown()
+     */
     public void setDown(boolean down) {
         this.down = down;
     }
+
+    /**
+     * Sets up, down, left, right to false
+     */
     public void reset(){
         this.up = false;
         this.down = false;
         this.left = false;
         this.right = false;
     }
+
+    /**
+     *
+     * @return number of lives left for the specific invader
+     */
     public int getLives(){
         return lives;
     }
 
+    /**
+     *
+     * @param lives sets the number of lives left to the invader
+     */
     public void setLives(int lives) {
         this.lives = lives;
     }

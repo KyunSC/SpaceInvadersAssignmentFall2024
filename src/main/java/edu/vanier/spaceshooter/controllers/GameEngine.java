@@ -456,6 +456,14 @@ public class GameEngine {
      * Dead sprites are removed from the animation panel, and the elapsed time
      * is reset after a certain threshold.
      * </p>
+     * Enables the invaders to move by calling moveUp(), moveDown(), moveLeft(), moveRight()
+     * Sets moving tp true in a window of time until it sets back to false
+     * Calls methods that need to be looped often processProjectiles();
+     *                                            removeDeadSprites();
+     *                                            spaceShipCollisions()
+     * After a few frames, sets randomly up, down, left or right to true to enable the invaders to move
+     * After a few frames, sets back to false and stops the invaders from moving
+     * When elapsed time is at 2, checks if the spaceship is still alive, if not then set the state to paused
      */
     private void update() {
         // Actions to be performed during each frame of the animation.
@@ -560,6 +568,10 @@ public class GameEngine {
         }
     }
 
+    /**
+     * Cycles through the projectile arraylist
+     * 
+     */
     private void processProjectiles(){
         for (int i = 0; i < projectileArrayList.size(); i++) {
             if (Objects.equals(projectileArrayList.get(i).getType(), "enemybullet")) handleEnemyBullet(projectileArrayList.get(i));

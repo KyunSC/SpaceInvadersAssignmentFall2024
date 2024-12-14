@@ -28,6 +28,18 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * elapsed time used in the timing of the movement and shooting of the invaders
+ * gameloop for the updates in real time
+ * shootdelay that adds a certain amount of time before next shot
+ * Arraylists to store the invaders, MediumInvaders, LargeInvaders and the Projectiles
+ * Boss which starts null
+ * shooting boolean to make the automatic shooting
+ * labels that are updated in real time
+ * all audio and images are initiated to be used at specific moments
+ *
+ */
 public class GameEngine {
     private final static Logger logger = LoggerFactory.getLogger(MainAppFXMLController.class);
     private double elapsedTime = 0;
@@ -88,6 +100,20 @@ public class GameEngine {
     int previousScore = 0;
     String gameState = "playing";
 
+    /**
+     *
+     * @param primaryStage stage of the window
+     * @param animationPanel animating pane
+     * @param HUD hud
+     * @param levelLabel displays level number dynamically
+     * @param scoreLabel displays the score dynamically updated every time invader is killed or boss is hit
+     * @param mainScene scene used
+     * @param livesLabel displays number of lives left
+     * @param restartButton restart button that calls restart()
+     * @param stackPane stackPane used by the HUD and UI
+     *                  Creates the player
+     *                  Calls setUpHUD and setUpGameWorld
+     */
     public GameEngine(Stage primaryStage, Pane animationPanel, VBox HUD, Label levelLabel, Label scoreLabel, Scene mainScene, Label livesLabel, Button restartButton, StackPane stackPane) {
         logger.info("Initializing MainAppController...");
         this.animationPanel = animationPanel;
@@ -107,6 +133,7 @@ public class GameEngine {
         setupGameWorld();
     }
 
+    
     public void setupGameWorld() {
         generateInvaders();
         initGameLoop();

@@ -935,6 +935,10 @@ public class GameEngine {
 
     /**
      * Stops all music alnd playes the level 1 music
+     * clears all of the lists and the animatioj pne
+     * creates a new player then adds it tp the pane
+     * Generate invaders and resets the HUD back to level 1 bumber
+     *
      *
      */
     private void backToLevel1() {
@@ -963,6 +967,13 @@ public class GameEngine {
         generateInvaders();
     }
 
+    /**
+     *
+     * @param target target that will explode
+     *               gets the position of the target to place a new sprite on it using the explosion gif initaaetd in the start
+     *               then uses a timeline after it finishes after 500 ms, to remove the gif from the animation pane
+     *               cucle cpunt to 1 and play
+     */
     private void handleExplosion(Sprite target){
         explosionArrayList.addLast(new Sprite(target.getLayoutX(), target.getLayoutY(), 40, 40, "" + spaceShip.getScore(), explosion));
         animationPanel.getChildren().add(explosionArrayList.getLast());
@@ -975,6 +986,12 @@ public class GameEngine {
         gifTime.play();
     }
 
+    /**
+     * Creates an explostion on the player position, removing the player adn playing a sound effect
+     * Clears all lists
+     * VBox that shows the score and the buttons to either go back to level 1 or restart from the begininig
+     *
+     */
     private void gameOver(){
         handleExplosion(spaceShip.getSprite());
         spaceShip.getSprite().setDead(true);
@@ -999,6 +1016,13 @@ public class GameEngine {
         handleExplosion(spaceShip.getSprite());
     }
 
+    /**
+     *
+     * @return button that on action will clear the lists and call backToLevel1
+     * Clears the animation pane
+     * Clears all of the lists and makes a new spaceship
+     *
+     */
     private Button getLevel1Button() {
         Button returnToLevel1 = new Button("Return to Level 1");
         returnToLevel1.setOnAction(event -> {

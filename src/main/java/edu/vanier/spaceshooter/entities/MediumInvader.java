@@ -7,6 +7,12 @@ import javafx.scene.paint.Color;
 
 import java.util.Stack;
 
+/**
+ * Invader for level 2
+ * It has 2 lives
+ * Type is enemy
+ * 
+ */
 public class MediumInvader extends Sprite {
     private boolean dead = false;
     private final String type;

@@ -7,6 +7,8 @@ import javafx.scene.shape.Rectangle;
 
 /**
  * General Sprite class used for the objects in the animation pane
+ * Gets the parameters from the invader, player of projectile
+ * extends imageview since all sprites are images
  */
 public class Sprite extends ImageView {
 
@@ -17,6 +19,17 @@ public class Sprite extends ImageView {
     private int width;
     private int height;
 
+    /**
+     *
+     * @param x position of the sprite
+     * @param y position of the sprite
+     * @param width fit width of the imageView
+     * @param height fit height of the imageView
+     * @param type returns type
+     * @param image image of the sprite needed
+     *              Sets the image size and preserves ratio of the image
+     *              Sets the sprite to the right position
+     */
     public Sprite(double x, double y, double width, double height, String type, Image image) {
         setImage(image);
         setFitWidth(width);
@@ -27,6 +40,9 @@ public class Sprite extends ImageView {
         setLayoutY(y);
     }
 
+    /**
+     * Overriden methods
+     */
     public void moveLeft() {
         setLayoutX(getLayoutX() - 5);
     }

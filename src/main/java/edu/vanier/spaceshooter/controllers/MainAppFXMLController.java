@@ -5,8 +5,10 @@ import edu.vanier.spaceshooter.entities.Player;
 import edu.vanier.spaceshooter.entities.Projectile;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -16,6 +18,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.AudioClip;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +45,7 @@ public class MainAppFXMLController {
     private ArrayList<Projectile> projectileArrayList = new ArrayList<>();
     private ArrayList<Invader> invaderArrayList = new ArrayList<>();
     private int score = 0;
+    private AudioClip mainMenuMusic = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/mainMenuMusic.mp3")).toExternalForm());
 
     @FXML
     private Label levelLabel;
@@ -62,11 +66,14 @@ public class MainAppFXMLController {
     @FXML
     public void initialize() {
         introBox.setStyle("-fx-background-color: black");
+        mainMenuMusic.setCycleCount(Animation.INDEFINITE);
+        mainMenuMusic.play();
         start.setOnAction(event -> setupGameWorld());
     }
 
     public void setupGameWorld() {
         stackPane.getChildren().remove(introBox);
+        mainMenuMusic.stop();
         GameEngine gameEngine = new GameEngine(primaryStage, animationPanel, HUD, levelLabel, scoreLabel, mainScene, livesLabel, restartButton, stackPane);
     }
 

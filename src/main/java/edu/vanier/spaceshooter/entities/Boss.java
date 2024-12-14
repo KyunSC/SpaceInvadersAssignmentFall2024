@@ -34,14 +34,6 @@ public class Boss extends Sprite {
         this.sprite = new Sprite(x, y, width, height, type, image);
     }
 
-    public void movementPattern(){
-        double random = Math.ceil(Math.random()*4);
-        if (random == 1) moveUp();
-        else if (random == 2) moveDown();
-        else if (random == 3) moveLeft();
-        else if (random == 4) moveRight();
-    }
-
     public void moveLeft() {
         if (left) {
             if (sprite.getLayoutX() > 100) sprite.setLayoutX(sprite.getLayoutX() - 5);

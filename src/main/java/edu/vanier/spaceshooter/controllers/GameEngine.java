@@ -69,7 +69,15 @@ public class GameEngine {
     AudioClip blasterSound2 = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/blaster2.mp3")).toExternalForm());
     AudioClip blasterSound3 = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/shoot.wav")).toExternalForm());
     AudioClip explosionSound = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/explosion.mp3")).toExternalForm());
+    AudioClip mediumExplosionSound = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/mediumExplosion.mp3")).toExternalForm());
+    AudioClip largeExplosionSound = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/largeExplosion.mp3")).toExternalForm());
     AudioClip backgroundMusic = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/backgroundMusic.mp3")).toExternalForm());
+    AudioClip backgroundMusic2 = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/backgroundMusic2.mp3")).toExternalForm());
+    AudioClip backgroundMusic3 = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/backgroundMusic3.mp3")).toExternalForm());
+    AudioClip mediumHit = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/mediumHit.mp3")).toExternalForm());
+    AudioClip largeHit = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/largeHit.mp3")).toExternalForm());
+    AudioClip bossHit = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/bossHit.mp3")).toExternalForm());
+    AudioClip playerHit = new AudioClip(Objects.requireNonNull(getClass().getResource("/sounds/playerHit.mp3")).toExternalForm());
     VBox gameOverVBox;
     VBox winBox;
     VBox hud;
@@ -105,6 +113,8 @@ public class GameEngine {
         initRestartButton();
         gameState = "playing";
         backgroundMusic.setCycleCount(Animation.INDEFINITE);
+        backgroundMusic2.setCycleCount(Animation.INDEFINITE);
+        backgroundMusic3.setCycleCount(Animation.INDEFINITE);
         backgroundMusic.play();
     }
 
@@ -368,6 +378,9 @@ public class GameEngine {
                 largeInvaderArraylist.get(i).moveLeft();
                 largeInvaderArraylist.get(i).moveRight();
             }
+            if (boss != null){
+                handleBossFiring(boss);
+            }
 
             processProjectiles();
             removeDeadSprites();
@@ -434,21 +447,9 @@ public class GameEngine {
         projectile.moveDown();
         // Check for collision with the spaceship
         if (projectile.getSprite().getBoundsInParent().intersects(spaceShip.getSprite().getBoundsInParent()) && !projectile.isDead()) {
-            if (spaceShip.getLives() <= 1) {
-                projectile.getSprite().setDead(true);
-                projectile.setDead(true);
-                spaceShip.getSprite().setDead(true);
-                spaceShip.setDead(true);
-                spaceShip.setLives(spaceShip.getLives() - 1);
-                livesLabel.setText("Lives: " + spaceShip.getLives());
-            }
-            else {
-                projectile.getSprite().setDead(true);
-                projectile.setDead(true);
-                spaceShip.setLives(spaceShip.getLives() - 1);
-                livesLabel.setText("Lives: " + spaceShip.getLives());
-                System.out.println(projectile);
-            }
+            projectile.getSprite().setDead(true);
+            projectile.setDead(true);
+            playerGetsHit();
         }
     }
 
@@ -506,6 +507,7 @@ public class GameEngine {
             handleExplosion(boss.getSprite());
             boss.setDead(true);
         }
+        else bossHit.play();
     }
 
     private void handleEnemyFiring(Invader invader) {
@@ -529,6 +531,9 @@ public class GameEngine {
             }
         }
     }
+    private void handleBossFiring(Boss boss) {
+        if (elapsedTime > 2) shoot(boss.getSprite());
+    }
 
     private void spaceShipCollisions(){
         for (int i = 0; i < invaderArrayList.size(); i++) {
@@ -543,10 +548,28 @@ public class GameEngine {
                 playerGetsHit();
             }
         }
+        for (int i = 0; i < largeInvaderArraylist.size(); i++) {
+            if (spaceShip.getSprite().getBoundsInParent().intersects(largeInvaderArraylist.get(i).getSprite().getBoundsInParent()) && !largeInvaderArraylist.get(i).isDead() && !spaceShip.isDead()) {
+                largeInvaderGetsHit(largeInvaderArraylist.get(i));
+                playerGetsHit();
+            }
+        }
+        if (boss != null) {
+            if (spaceShip.getSprite().getBoundsInParent().intersects(boss.getSprite().getBoundsInParent())) {
+                playerGetsHit();
+                bossGetsHit();
+            }
+        }
     }
 
     private void playerGetsHit(){
-        if (spaceShip.getLives() <= 1) gameOver();
+        if (spaceShip.getLives() <= 1) {
+            explosionSound.play();
+            gameOver();
+        }
+        else {
+            playerHit.play();
+        }
         spaceShip.setLives(spaceShip.getLives() - 1);
         livesLabel.setText("Lives: " + spaceShip.getLives());
     }
@@ -569,9 +592,10 @@ public class GameEngine {
             invader.setDead(true);
             invader.getSprite().setDead(true);
             mediumInvaderArrayList.remove(invader);
-            explosionSound.play();
+            mediumExplosionSound.play();
             checkNextLevel();
         }
+        else mediumHit.play();
     }
 
     private void largeInvaderGetsHit(LargeInvader invader){
@@ -582,9 +606,9 @@ public class GameEngine {
             invader.setDead(true);
             invader.getSprite().setDead(true);
             largeInvaderArraylist.remove(invader);
-            explosionSound.play();
+            largeExplosionSound.play();
             checkNextLevel();
-        }
+        } else largeHit.play();
     }
 
     private void updateScorePlus1(){
@@ -617,10 +641,14 @@ public class GameEngine {
                 stackPane.getChildren().remove(gameOverVBox);
 
                 if (level == 1) {
+                    backgroundMusic.stop();
+                    backgroundMusic2.play();
                     stackPane.setStyle("-fx-background-image: url(/images/singularity.jpg); -fx-background-size: 1920 1080");
                     firingMode = 2;
                     spaceShip.getSprite().setImage(spaceship2);
                 } else {
+                    backgroundMusic2.stop();
+                    backgroundMusic3.play();
                     stackPane.setStyle("-fx-background-image: url(/images/spaceTime.jpg); -fx-background-size: 1920 1080");
                     firingMode = 3;
                     spaceShip.getSprite().setImage(spaceship3);
